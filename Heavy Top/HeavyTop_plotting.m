@@ -173,7 +173,7 @@ createNormComparisonPlot({position_errors_rms_norm, velocity_errors_rms_norm, ac
                         time_steps, method_names, line_specs, ...
                         'The norm (magnitude)', 'RMS Error');
 
-% 6. Computation time 
+% 6. Computation time (setLogYTicks(...,'auto') does not force YLim — same YData, classic framing)
 figure;
 hold on;
 current_data = [];
@@ -189,7 +189,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, current_data);
+setLogYTicks(gca, current_data, 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 ylabel('Computational time [s]', 'FontName', heavyTopFont);
 xlabel('Time step [ms]', 'FontName', heavyTopFont);
@@ -213,7 +213,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, current_data);
+setLogYTicks(gca, current_data, 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 xlabel('Time step [ms]', 'FontName', heavyTopFont);
 ylabel('Energy magnitude [J]', 'FontName', heavyTopFont);
@@ -237,7 +237,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, current_data);
+setLogYTicks(gca, current_data, 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 xlabel('Time step [ms]', 'FontName', heavyTopFont);
 ylabel('RMS energy magnitude [J]', 'FontName', heavyTopFont);
@@ -260,7 +260,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, computation_times(~isnan(computation_times)));
+setLogYTicks(gca, computation_times(~isnan(computation_times)), 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 xlabel('RMS position error, X component [m]', 'FontName', heavyTopFont);
 ylabel('Computational time [s]', 'FontName', heavyTopFont);
@@ -290,7 +290,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, computation_times(~isnan(computation_times)));
+setLogYTicks(gca, computation_times(~isnan(computation_times)), 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 xlabel('RMS position norm error [m]', 'FontName', heavyTopFont);
 ylabel('Computational time [s]', 'FontName', heavyTopFont);
@@ -310,7 +310,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, computation_times(~isnan(computation_times)));
+setLogYTicks(gca, computation_times(~isnan(computation_times)), 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 xlabel('RMS velocity norm error [m/s]', 'FontName', heavyTopFont);
 ylabel('Computational time [s]', 'FontName', heavyTopFont);
@@ -330,7 +330,7 @@ end
 grid on;
 set(gca, 'XScale', 'log', 'YScale', 'log', ...
     'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
-setLogYTicks(gca, computation_times(~isnan(computation_times)));
+setLogYTicks(gca, computation_times(~isnan(computation_times)), 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 xlabel('RMS acceleration norm error [m/s^2]', 'FontName', heavyTopFont);
 ylabel('Computational time [s]', 'FontName', heavyTopFont);

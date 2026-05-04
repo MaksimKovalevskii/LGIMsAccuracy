@@ -90,9 +90,14 @@ function setLogYTicks(ax, data_matrix, labelMode)
     % Make sure log scale is set
     set(ax, 'YScale', 'log');
 
-    % Ensure the labeled min/max decades are within the visible range
-    set(ax, 'YLim', [10^minPow, 10^maxPow]);
-    
+    % Only tighten YLim for sparse tick *labels* (error plots). For 'auto',
+    % leave limits to MATLAB so curves are not visually reframed vs older
+    % figures that used default ylim (same YData, different perception).
+    lm = lower(char(labelMode));
+    if ~strcmp(lm, 'auto')
+        set(ax, 'YLim', [10^minPow, 10^maxPow]);
+    end
+
     set(ax, 'GridAlpha', 0.3);
     set(ax, 'YMinorGrid', 'off', 'XMinorGrid', 'off');
 end
