@@ -6,55 +6,62 @@ function createComparisonPlot(error_data_x, error_data_y, error_data_z, time_ste
     %   time_steps - Vector of time step values
     %   method_names - Cell array of method names for legend
     %   line_specs - Cell array of line specifications for each method
-    %   plot_title - Main title for the figure
-    %   error_type - String describing error type (e.g., 'RMS Error', 'MAX ABS Error')
-    
+    %   plot_title - Component label for axis text (e.g. 'X axis component')
+    %   error_type - String describing error type (e.g. 'RMS Error', 'MAX ABS Error')
+
     figure;
-    titles = {'Position Error', 'Velocity Error', 'Acceleration Error'};
-    ylabels = {'(m)', '(m/s)', '(m/s²)'};
-    
-    % Determine which error matrices to use for each subplot
+    set(gcf, 'Name', sprintf('%s - %s', error_type, plot_title));
+
+    qty = {'Position', 'Velocity', 'Acceleration'};
+    units = {'m', 'm/s', 'm/s^2'};
+    if strcmp(error_type, 'RMS Error')
+        err_label = 'RMS error';
+    elseif strcmp(error_type, 'MAX ABS Error')
+        err_label = 'Maximum absolute error';
+    else
+        err_label = error_type;
+    end
+
+    % Shared (unified) error label for all 3 subplots
+    annotation(gcf, 'textbox', [0.005, 0.5, 0.02, 0.1], ...
+        'String', err_label, 'EdgeColor', 'none', 'Rotation', 90, ...
+        'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
+        'FontName', 'Times New Roman');
+
     error_matrices = {error_data_x, error_data_y, error_data_z};
-    
+
     for sp = 1:3
-        subplot(3,1,sp);
+        subplot(3, 1, sp);
         hold on;
         grid on;
-        set(gca, 'XScale', 'log', 'YScale', 'log');
-        
-        plot_handles = gobjects(0);   % Initialize empty array for plot handles
-        legend_entries = {};          % Initialize cell array for legend entries
-        current_data = [];            % Collect data for tick calculation
-        
-        % Plot each method's data
-    for m = 1:numel(method_names)
-        % Find valid time-step indices for this method
-        idx = find(~isnan(error_matrices{sp}(m,:)));
-        % Only keep indices that actually exist in time_steps
-idx = idx(idx <= numel(time_steps));
-        if isempty(idx)
-            continue;
+        set(gca, 'XScale', 'log', 'YScale', 'log', ...
+            'XMinorGrid', 'off', 'YMinorGrid', 'off', ...
+            'FontName', 'Times New Roman');
+
+        plot_handles = gobjects(0);
+        legend_entries = {};
+        current_data = [];
+
+        for m = 1:numel(method_names)
+            idx = find(~isnan(error_matrices{sp}(m, :)));
+            idx = idx(idx <= numel(time_steps));
+            if isempty(idx)
+                continue;
+            end
+            ydata = error_matrices{sp}(m, idx);
+            h = loglog(time_steps(idx), ydata, line_specs{m}{:});
+            plot_handles(end + 1) = h;
+            legend_entries{end + 1} = method_names{m};
+            current_data = [current_data, ydata];
         end
-        % Extract and plot
-        ydata = error_matrices{sp}(m, idx);
-        h = loglog(time_steps(idx), ydata, line_specs{m}{:});
-        plot_handles(end+1) = h;
-        legend_entries{end+1} = method_names{m};
-        current_data = [current_data, ydata];
-    end
-        
-        % Apply custom tick formatting
-        setLogYTicks(gca, current_data);
-        
-        % Set titles and labels
-        title(titles{sp});
-        ylabel(ylabels{sp});
+
+        setLogYTicks(gca, current_data, 'minmax_every3');
+        set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', 'Times New Roman');
+
+        ylabel(sprintf('%s [%s]', qty{sp}, units{sp}), 'FontName', 'Times New Roman');
         if sp == 3
-            xlabel('Time Step (ms)');
-            % Add legend only once after plotting all subplots
-            legend(plot_handles, legend_entries, 'Location', 'northwest');
+            xlabel('Time step [ms]', 'FontName', 'Times New Roman');
+            legend(plot_handles, legend_entries, 'Location', 'northwest', 'FontName', 'Times New Roman');
         end
     end
-    
-   % sgtitle([error_type ' - ' plot_title]);
 end

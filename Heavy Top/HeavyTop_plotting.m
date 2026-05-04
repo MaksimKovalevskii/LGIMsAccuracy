@@ -1,8 +1,8 @@
 % Define time steps and methods
 
-%time_steps = [0.01, 0.02,0.05,0.1,0.2, 0.5, 1,1.5, 2,3,4,10];
+time_steps = [0.01, 0.02,0.05,0.1,0.2, 0.5, 1,1.5, 2,3,4,10];
 %time_steps = [1,1.5, 2,3,4,10];
-time_steps = [3,4,10];
+%time_steps = [3,4,10];
 
 method_names = {'Conv-Quat', 'NE-Quat', 'NE-CRV', 'CRV-LGIM', 'Quat-LGIM'};
 file_patterns = {'HTClassicEP_dt_%.2fms.mat', 'HTNE_EP_dt_%.2fms.mat', ...
@@ -138,7 +138,8 @@ end
 
 
 
-% Plotting setup
+% Plotting: 
+heavyTopFont = 'Times New Roman';
 line_specs = {
     {'-.o', 'Color', [0 0.4470 0.7410], 'MarkerSize', 8, 'LineWidth', 1.5},  % Conv-Quat
     {'k--', 'MarkerSize', 9, 'LineWidth', 1.4},  % NE-Quat
@@ -186,13 +187,15 @@ for m = 1:num_methods
     end
 end
 grid on;
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 setLogYTicks(gca, current_data);
-%title('Computation time');
-ylabel('Time (s)');
-xlabel('Time Step (ms)');
-set(gca, 'XScale', 'log', 'YScale', 'log');
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+ylabel('Computational time [s]', 'FontName', heavyTopFont);
+xlabel('Time step [ms]', 'FontName', heavyTopFont);
 valid_methods = any(~isnan(computation_times), 2);
-legend(plot_handles(valid_methods), method_names(valid_methods), 'Location', 'northwest');
+legend(plot_handles(valid_methods), method_names(valid_methods), ...
+    'Location', 'northwest', 'FontName', heavyTopFont);
 
 % 7. Energy at Final Time Step 
 figure;
@@ -208,13 +211,15 @@ for m = 1:num_methods
     end
 end
 grid on;
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 setLogYTicks(gca, current_data);
-%title('Energy at Final Time Step vs Time Step Size');
-xlabel('Time Step (ms)');
-ylabel('|Energy| (J)');
-set(gca, 'XScale', 'log', 'YScale', 'log');
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+xlabel('Time step [ms]', 'FontName', heavyTopFont);
+ylabel('Energy magnitude [J]', 'FontName', heavyTopFont);
 valid_methods = any(~isnan(energy_last_step), 2);
-legend(plot_handles(valid_methods), method_names(valid_methods), 'Location', 'northwest');
+legend(plot_handles(valid_methods), method_names(valid_methods), ...
+    'Location', 'northwest', 'FontName', heavyTopFont);
 
 % 8. Energy RMS
 figure;
@@ -230,17 +235,20 @@ for m = 1:num_methods
     end
 end
 grid on;
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 setLogYTicks(gca, current_data);
-%title('RMS Energy balance violation vs Time Step Size');
-xlabel('Time Step (ms)');
-ylabel('|Energy| (J)');
-set(gca, 'XScale', 'log', 'YScale', 'log');
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+xlabel('Time step [ms]', 'FontName', heavyTopFont);
+ylabel('RMS energy magnitude [J]', 'FontName', heavyTopFont);
 valid_methods = any(~isnan(energy_errors_rms), 2);
-legend(plot_handles(valid_methods), method_names(valid_methods), 'Location', 'northwest');
+legend(plot_handles(valid_methods), method_names(valid_methods), ...
+    'Location', 'northwest', 'FontName', heavyTopFont);
 
 %RMS position X Accuracy vs Computation time
 figure;
 hold on;
+all_posX = position_errors_rms(~isnan(position_errors_rms) & position_errors_rms > 0);
 for m = 1:num_methods
     % Only include time steps that have valid errors and valid computational time
     valid_idx = ~isnan(position_errors_rms(m,:)) & ~isnan(computation_times(m,:));
@@ -250,11 +258,23 @@ for m = 1:num_methods
     end
 end
 grid on;
-xlabel('RMS Position X Error (m)');   % or whatever error metric you've chosen
-ylabel('Computational Time (s)');
-legend(method_names, 'Location','northwest');
-%title('Computational Time vs. Accuracy (RMS Position X Error)');
-set(gca, 'XScale','log', 'YScale','log');
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+setLogYTicks(gca, computation_times(~isnan(computation_times)));
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+xlabel('RMS position error, X component [m]', 'FontName', heavyTopFont);
+ylabel('Computational time [s]', 'FontName', heavyTopFont);
+legend(method_names, 'Location', 'northwest', 'FontName', heavyTopFont);
+
+if ~isempty(all_posX)
+    xMin = max(min(all_posX) * 0.9, eps);
+else
+    xMin = eps;
+end
+if xMin >= 1e3
+    xMin = 1e-6;
+end
+set(gca, 'XLim', [xMin, 1e3]);
 
 %RMS norm position Accuracy vs Computation time
 figure;
@@ -268,11 +288,13 @@ for m = 1:num_methods
     end
 end
 grid on;
-xlabel('RMS Position Norm Error (m)');   % or whatever error metric you've chosen
-ylabel('Computational Time (s)');
-legend(method_names, 'Location','northwest');
-%title('Computational Time vs. Accuracy (RMS Position Norm Error)');
-set(gca, 'XScale','log', 'YScale','log');
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+setLogYTicks(gca, computation_times(~isnan(computation_times)));
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+xlabel('RMS position norm error [m]', 'FontName', heavyTopFont);
+ylabel('Computational time [s]', 'FontName', heavyTopFont);
+legend(method_names, 'Location', 'northwest', 'FontName', heavyTopFont);
 
 %RMS norm VELOCITY Accuracy vs Computation time
 figure;
@@ -286,11 +308,13 @@ for m = 1:num_methods
     end
 end
 grid on;
-xlabel('RMS Velocity Norm Error (m)');   % or whatever error metric you've chosen
-ylabel('Computational Time (s)');
-legend(method_names, 'Location','northwest');
-%title('Computational Time vs. Accuracy (RMS Velocity Norm Error)');
-set(gca, 'XScale','log', 'YScale','log');
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+setLogYTicks(gca, computation_times(~isnan(computation_times)));
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+xlabel('RMS velocity norm error [m/s]', 'FontName', heavyTopFont);
+ylabel('Computational time [s]', 'FontName', heavyTopFont);
+legend(method_names, 'Location', 'northwest', 'FontName', heavyTopFont);
 
 %RMS norm Acceleration Accuracy vs Computation time
 figure;
@@ -304,16 +328,13 @@ for m = 1:num_methods
     end
 end
 grid on;
-xlabel('RMS Acceleration Norm Error (m)');   % or whatever error metric you've chosen
-ylabel('Computational Time (s)');
-legend(method_names, 'Location','northwest');
-%title('Computational Time vs. Accuracy (RMS Acceleration Norm Error)');
-set(gca, 'XScale','log', 'YScale','log');
-
-% Only include methods with valid data in the legend
-valid_methods = any(~isnan(computation_times), 2);
-legend(plot_handles(valid_methods), method_names(valid_methods), 'Location', 'northwest');
-
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+setLogYTicks(gca, computation_times(~isnan(computation_times)));
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+xlabel('RMS acceleration norm error [m/s^2]', 'FontName', heavyTopFont);
+ylabel('Computational time [s]', 'FontName', heavyTopFont);
+legend(method_names, 'Location', 'northwest', 'FontName', heavyTopFont);
 
 %UNIT CONSTRAINT violation (only EP methods: Conv-Quat, NE-Quat, Quat-LGIM)
 ep_method_inds = [1, 2, 5];  % indices in method_names for Euler-parameter formulations
@@ -332,11 +353,14 @@ for k = 1:num_ep
     end
 end
 grid on;
+set(gca, 'XScale', 'log', 'YScale', 'log', ...
+    'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
+setLogYTicks(gca, abs(uc_last_step(~isnan(uc_last_step))), 'every3');
+set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', heavyTopFont);
 
-xlabel('Time Step (ms)', 'Interpreter', 'latex', 'FontSize', 11);
-ylabel('EP Unit Constraint Deviation', 'Interpreter', 'latex', 'FontSize', 11);
-set(gca, 'XScale', 'log', 'YScale', 'log', 'FontSize', 10);
+xlabel('Time step [ms]', 'FontName', heavyTopFont);
+ylabel('EP unit constraint deviation [-]', 'FontName', heavyTopFont);
 
 valid_methods = isgraphics(plot_handles);
 legend(plot_handles(valid_methods), ep_method_names(valid_methods), ...
-       'Interpreter', 'latex', 'FontSize', 10, 'Location', 'best');
+    'Location', 'best', 'FontName', heavyTopFont);

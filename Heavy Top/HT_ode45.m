@@ -1,4 +1,4 @@
-tic;
+%tic;
 % Parameters
 b00=1;
 b10=0;
@@ -32,7 +32,7 @@ zd0=gw0(1)*y0 - gw0(2)*x0;
 % Initial conditions
 initial_conditions = [x0; xd0; y0; yd0;z0; zd0; wx0; wy0; wz0;b00; b10; b20;b30];
 
-t_end = 100;  % End value for time
+t_end = 20;  % End value for time
 % Time span
 tspan = 0:0.0001:t_end;
 
@@ -196,11 +196,11 @@ grdC(i)=(dC(i,1)+dC(i,2)+dC(i,3))/3;
 grddC(i)=(ddC(i,1)+ddC(i,2)+ddC(i,3))/3;
 end
 
-executionTime = toc;
-if ~exist('save_filename','var') || isempty(save_filename)
-    save_filename = 'HTRef.mat';
-end
-save(save_filename, '-v7.3');
+%executionTime = toc;
+%if ~exist('save_filename','var') || isempty(save_filename)
+%    save_filename = 'HTRef.mat';
+%end
+%save(save_filename, '-v7.3');
 
 % Plotting results for x y z
 figure;
@@ -316,22 +316,23 @@ figure;
 subplot(3,1,1);
 plot(t,wx,'b-','LineWidth',2); 
 ylim([-7,7]);
-title('Wx');
-ylabel({'Ang velocity Wx'; 's-1'});
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
+ylabel({'$\omega_x$ [rad/s]'}, 'Interpreter','latex');
 grid on;
 
 subplot(3,1,2);
 plot(t,wy,'r-','LineWidth',2); 
 ylim([0,200]);
-title('Wy');
-ylabel({'Ang velocity Wy'; 's-1'});
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
+ylabel({'$\omega_y$ [rad/s]'}, 'Interpreter','latex');
 grid on;
 
 subplot(3,1,3);
 plot(t,wz,'g-','LineWidth',2); 
 ylim([-7,7]);
-title('Wz');
-ylabel({'Ang velocity Wz';'s-1'});
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
+xlabel('Time (s)');
+ylabel({'$\omega_z$ [rad/s]'}, 'Interpreter','latex');
 grid on;
 
 %Plotting results for Angular accelerations
@@ -436,27 +437,24 @@ figure;
 subplot(3,1,1);
 plot(t,x,'b-','LineWidth',2);
 ylim([-1,1]);
-title('$R_X(t)$', 'Interpreter', 'latex');
-ylabel('Displacement $X$ (m)', 'Interpreter', 'latex');
+ylabel('$R_X$ [m]', 'Interpreter', 'latex');
 grid on;
-set(gca, 'FontName','Times', 'FontSize',11);
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
 
 subplot(3,1,2);
 plot(t,xd,'r-','LineWidth',2); 
 ylim([-10,10]);
-title('$\dot{R}_X(t)$', 'Interpreter', 'latex');
-ylabel('Velocity $X$ (m/s)', 'Interpreter', 'latex');
+ylabel('$\dot{R}_X$ [m/s]', 'Interpreter', 'latex');
 grid on;
-set(gca, 'FontName','Times', 'FontSize',11);
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
 
 subplot(3,1,3);
 plot(t,x_double_prime,'g-','LineWidth',2); 
 ylim([-50,45]);
-title('$\ddot{R}_X(t)$', 'Interpreter', 'latex');
 xlabel('Time (s)', 'Interpreter','latex');
-ylabel('Acceleration $X$ (m/s$^2$)', 'Interpreter', 'latex');
+ylabel('$\ddot{R}_X$ [m/s$^2$]', 'Interpreter', 'latex');
 grid on;
-set(gca, 'FontName','Times', 'FontSize',11);
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
 
 
 figure;
@@ -466,9 +464,9 @@ subplot(2,1,1);
 plot(t, wy, 'r-', 'LineWidth', 1.5);
 xlim([0 2]);
 ylim([0 200]);
-ylabel({'Angular velocity $\omega_y$ (s$^{-1}$)'}, 'Interpreter','latex');
+ylabel({'$\omega_y$ [rad/s]'}, 'Interpreter','latex');
 grid on;
-set(gca, 'FontName','Times', 'FontSize',12);
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
 
 % --- Subplot 2: wx and wz ---
 subplot(2,1,2);
@@ -477,9 +475,7 @@ plot(t, wz, 'g-', 'LineWidth', 1.5);
 xlim([0 2]);
 ylim([-7 7]);
 xlabel('Time (s)', 'Interpreter','latex');
-ylabel({'Angular velocity $\omega_x,\ \omega_z$ (s$^{-1}$)'}, 'Interpreter','latex');
-legend({'$\omega_x$', '$\omega_z$'}, 'Interpreter','latex', ...
-       'Location','best', 'Box','off');
+ylabel({'$\omega_x,\ \omega_z$ [rad/s]'}, 'Interpreter','latex');
 grid on;
-set(gca, 'FontName','Times', 'FontSize',12);
+set(gca, 'FontName','Times New Roman', 'FontSize',12);
 

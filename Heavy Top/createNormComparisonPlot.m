@@ -6,49 +6,57 @@ function createNormComparisonPlot(error_data_norm, time_steps, method_names, lin
     %   time_steps - Vector of time step values
     %   method_names - Cell array of method names for legend
     %   line_specs - Cell array of line specifications for each method
-    %   plot_title - Main title for the figure
-    %   error_type - String describing error type (e.g., 'RMS Error', 'MAX ABS Error')
-    
+    %   plot_title - Descriptor (e.g. 'The norm (magnitude)') for documentation; norm is spelled out in axis labels
+    %   error_type - String describing error type (e.g. 'RMS Error', 'MAX ABS Error')
+
     figure;
-    titles = {'Position Error', 'Velocity Error', 'Acceleration Error'};
-    ylabels = {'(m)', '(m/s)', '(m/s²)'};
-    
+    set(gcf, 'Name', sprintf('%s - %s', error_type, plot_title));
+    qty_label = {'Position', 'Velocity', 'Acceleration'};
+    units = {'m', 'm/s', 'm/s^2'};
+    if strcmp(error_type, 'RMS Error')
+        err_label = 'RMS error';
+    elseif strcmp(error_type, 'MAX ABS Error')
+        err_label = 'Maximum absolute error';
+    else
+        err_label = error_type;
+    end
+
+    % Shared (unified) error label for all 3 subplots
+    annotation(gcf, 'textbox', [0.005, 0.5, 0.02, 0.1], ...
+        'String', err_label, 'EdgeColor', 'none', 'Rotation', 90, ...
+        'HorizontalAlignment', 'center', 'VerticalAlignment', 'middle', ...
+        'FontName', 'Times New Roman');
+
     for sp = 1:3
-        subplot(3,1,sp);
+        subplot(3, 1, sp);
         hold on;
         grid on;
-        set(gca, 'XScale', 'log', 'YScale', 'log');
-        
-        plot_handles = gobjects(0);   % Initialize empty array for plot handles
-        legend_entries = {};          % Initialize cell array for legend entries
-        current_data = [];            % Collect data for tick calculation
-        
-        % Plot each method's data
-        for m = 1:size(error_data_norm{sp}, 1)  % Number of methods
-            % Handle NaN values - only plot valid points
-            valid_points = ~isnan(error_data_norm{sp}(m,:));
+        set(gca, 'XScale', 'log', 'YScale', 'log', ...
+            'XMinorGrid', 'off', 'YMinorGrid', 'off', ...
+            'FontName', 'Times New Roman');
+
+        plot_handles = gobjects(0);
+        legend_entries = {};
+        current_data = [];
+
+        for m = 1:size(error_data_norm{sp}, 1)
+            valid_points = ~isnan(error_data_norm{sp}(m, :));
             if any(valid_points)
                 data_to_plot = error_data_norm{sp}(m, valid_points);
                 h = loglog(time_steps(valid_points), data_to_plot, line_specs{m}{:});
-                
-                plot_handles(end+1) = h;                % Store the plot handle
-                legend_entries{end+1} = method_names{m}; % Store the corresponding method name
-                current_data = [current_data, data_to_plot]; % Collect all data for tick calculation
+                plot_handles(end + 1) = h;
+                legend_entries{end + 1} = method_names{m};
+                current_data = [current_data, data_to_plot];
             end
         end
-        
-        % Apply custom tick formatting
-        setLogYTicks(gca, current_data);
-        
-        % Set titles and labels
-        title(titles{sp});
-        ylabel(ylabels{sp});
+
+        setLogYTicks(gca, current_data, 'minmax_every3');
+        set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', 'Times New Roman');
+
+        ylabel(sprintf('%s norm [%s]', qty_label{sp}, units{sp}), 'FontName', 'Times New Roman');
         if sp == 3
-            xlabel('Time Step (ms)');
-            % Add legend only once after plotting all subplots
-            legend(plot_handles, legend_entries, 'Location', 'northwest');
+            xlabel('Time step [ms]', 'FontName', 'Times New Roman');
+            legend(plot_handles, legend_entries, 'Location', 'northwest', 'FontName', 'Times New Roman');
         end
     end
-    
-   % sgtitle([error_type ' - ' plot_title]);
 end
