@@ -1,7 +1,7 @@
 READMETennisRacket
 
-The tennis racket (free rotation of a rigid body with fixed point) is a classical benchmark
-in multibody dynamics and a useful test case for Lie group and Cartesian rotation integrators.
+The tennis racket theorem, also known as the intermediate axis theorem or Dzhanibekov effect, describes the unstable rotational behavior of a rigid body about its intermediate principal axis. When a tennis racket (or any object with three distinct principal moments of inertia) is thrown
+with initial rotation predominantly about the intermediate axis, the body undergoes characteristic tumbling motion with periodic half-rotations, during which the object’s orientation flips through π radians.
 
 System used for development and testing:
 - Operating system: Windows 10/11 (64-bit)
