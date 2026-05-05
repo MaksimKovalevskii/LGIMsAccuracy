@@ -87,12 +87,7 @@ function setLogYTicks(ax, data_matrix, labelMode)
             set(ax, 'YTickLabelMode', 'auto');
     end
     
-    % Make sure log scale is set
     set(ax, 'YScale', 'log');
-
-    % Only tighten YLim for sparse tick *labels* (error plots). For 'auto',
-    % leave limits to MATLAB so curves are not visually reframed vs older
-    % figures that used default ylim (same YData, different perception).
     lm = lower(char(labelMode));
     if ~strcmp(lm, 'auto')
         set(ax, 'YLim', [10^minPow, 10^maxPow]);

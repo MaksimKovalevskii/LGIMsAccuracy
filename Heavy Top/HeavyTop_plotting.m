@@ -173,7 +173,7 @@ createNormComparisonPlot({position_errors_rms_norm, velocity_errors_rms_norm, ac
                         time_steps, method_names, line_specs, ...
                         'The norm (magnitude)', 'RMS Error');
 
-% 6. Computation time (setLogYTicks(...,'auto') does not force YLim — same YData, classic framing)
+% 6. Computation time 
 figure;
 hold on;
 current_data = [];

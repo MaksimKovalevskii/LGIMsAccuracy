@@ -1,4 +1,4 @@
-%tic;
+tic;
 % Parameters
 b00=1;
 b10=0;
@@ -196,11 +196,11 @@ grdC(i)=(dC(i,1)+dC(i,2)+dC(i,3))/3;
 grddC(i)=(ddC(i,1)+ddC(i,2)+ddC(i,3))/3;
 end
 
-%executionTime = toc;
-%if ~exist('save_filename','var') || isempty(save_filename)
-%    save_filename = 'HTRef.mat';
-%end
-%save(save_filename, '-v7.3');
+executionTime = toc;
+if ~exist('save_filename','var') || isempty(save_filename)
+   save_filename = 'HTRef.mat';
+end
+save(save_filename, '-v7.3');
 
 % Plotting results for x y z
 figure;
