@@ -40,6 +40,6 @@ for j = 1:numel(time_steps_ms)
     run('HT_ClassicEP');
 end
 
-% % Reference solution with ode45 (fixed, fine time step inside HT_ode45)
-% save_filename = 'HTRef.mat';
-% run('HT_ode45');
+% Reference solution with ode45 (fixed, fine time step inside HT_ode45)
+save_filename = 'HTRef.mat';
+run('HT_ode45');

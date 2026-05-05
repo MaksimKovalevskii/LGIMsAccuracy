@@ -1,5 +1,3 @@
-% SEEMS THAT WRONG FUNCTION!!!+Bs for global system, -Bs for local
-
 function Ghat= GmatrixEP(x, y, z, b0, b1, b2, b3)
 %syms x y z b0 b1 b2 b3
 

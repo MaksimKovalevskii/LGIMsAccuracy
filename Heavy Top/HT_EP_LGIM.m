@@ -271,7 +271,6 @@ end
 [t, F, second_derivatives, C, dC, ddC,Ener, UC] = custom_rk4(@odesystem, tspan, initial_conditions);
 
 % Extract results from Y matrix
-% Extract results from Y matrix
 x = F(:,1);
 y = F(:,2);
 z = F(:,3);

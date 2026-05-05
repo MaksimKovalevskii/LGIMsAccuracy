@@ -125,8 +125,6 @@ omegaint=Gint*betasd';
 %Qv1=cross(omegaint,Iqq*omegaint);
 Qv1=cross(omegaint,Iqq*omegaint)+Iqq*G2*betasd';
 result = Iqq*G2*betasd';
-%fprintf('%g ', result');  % Transpose for proper display
-%fprintf('\n');  % Add newline at the end
 Qv=-Gint'*Qv1; 
 
 Qc = [-4.*b0d*b3d + 4.*b1d*b2d;
