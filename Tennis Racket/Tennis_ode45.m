@@ -93,6 +93,8 @@ Ener0=0.5*w_vec0'*Iqq*w_vec0;
 H_body0 = [Iqq(1,1)*wx0, Iqq(2,2)*wy0, Iqq(3,3)*wz0];
 H_norm0 = sqrt(sum(H_body0.^2, 2));
 
+H_norm = zeros(length(t), 1);
+Ener = zeros(length(t), 1);
 for i = 1:length(t)
 w_vec=[wx(i);
 wy(i);
@@ -102,135 +104,91 @@ H_norm(i) = sqrt(sum(H_body.^2, 2)) - H_norm0;
 Ener(i) = 0.5*w_vec'*Iqq*w_vec-Ener0 ;
 end
 
-save('TennisRef.mat', '-v7.3');
+if ~exist('save_filename', 'var') || isempty(save_filename)
+    save_filename = 'TennisRef.mat';
+end
+save(save_filename, '-v7.3');
 
-% Plotting results for Angular velocities
+paperFont = 'Times New Roman';
+
+% Angular velocity
 figure;
-subplot(3,1,1);
-plot(t,wx,'b-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('Wx');
-ylabel({'Ang velocity Wx'; 's-1'});
+subplot(3, 1, 1);
+plot(t, wx, 'b-', 'LineWidth', 1.5);
+ylim([-3.5, 3.5]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$\omega_x$ [rad/s]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,2);
-plot(t,wy,'r-','LineWidth',2); 
-ylim([-1.5,1.5]);
-title('Wy');
-ylabel({'Ang velocity Wy'; 's-1'});
+subplot(3, 1, 2);
+plot(t, wy, 'r-', 'LineWidth', 1.5);
+ylim([-1.5, 1.5]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$\omega_y$ [rad/s]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,3);
-plot(t,wz,'g-','LineWidth',2); 
-ylim([-0.1,0.2]);
-title('Wz');
-ylabel({'Ang velocity Wz';'s-1'});
+subplot(3, 1, 3);
+plot(t, wz, 'g-', 'LineWidth', 1.5);
+ylim([-0.1, 0.2]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('$\omega_z$ [rad/s]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-% Plotting results for Angular velocities
+% Euler parameters (quaternion components)
 figure;
-
-subplot(3,1,1);
-plot(t,wx,'b-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('$\omega_X(t)$', 'Interpreter', 'latex', 'FontSize', 11);
-%ylabel('Angular velocity (rad/s)', 'Interpreter', 'latex', 'FontSize', 10);
+subplot(4, 1, 1);
+plot(t, b0, 'b-', 'LineWidth', 1.5);
+ylim([-1, 1]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$b_0$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,2);
-plot(t,wy,'r-','LineWidth',2); 
-ylim([-1.5,1.5]);
-title('$\omega_Y(t)$', 'Interpreter', 'latex', 'FontSize', 11);
-ylabel('Angular velocity (rad/s)', 'Interpreter', 'latex', 'FontSize', 10);
+subplot(4, 1, 2);
+plot(t, b1, 'r-', 'LineWidth', 1.5);
+ylim([-1, 1]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$b_1$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,3);
-plot(t,wz,'g-','LineWidth',2); 
-ylim([-0.1,0.2]);
-title('$\omega_Z(t)$', 'Interpreter', 'latex', 'FontSize', 11);
-%ylabel('Angular velocity (rad/s)', 'Interpreter', 'latex', 'FontSize', 10);
-xlabel('Time (s)', 'Interpreter', 'latex', 'FontSize', 10);
+subplot(4, 1, 3);
+plot(t, b2, 'g-', 'LineWidth', 1.5);
+ylim([-1, 1]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$b_2$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-% Plotting results for Angular velocities
-fig = figure;
-
-subplot(3,1,1);
-plot(t,wx,'b-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('$\omega_X(t)$', 'Interpreter', 'latex', 'FontSize', 11);
+subplot(4, 1, 4);
+plot(t, b3, 'c-', 'LineWidth', 1.5);
+ylim([-1, 1]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('$b_3$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,2);
-plot(t,wy,'r-','LineWidth',2); 
-ylim([-1.5,1.5]);
-title('$\omega_Y(t)$', 'Interpreter', 'latex', 'FontSize', 11);
-grid on;
-
-subplot(3,1,3);
-plot(t,wz,'g-','LineWidth',2); 
-ylim([-0.1,0.2]);
-title('$\omega_Z(t)$', 'Interpreter', 'latex', 'FontSize', 11);
-xlabel('Time (s)', 'Interpreter', 'latex', 'FontSize', 10);
-grid on;
-
-% Add single ylabel for all subplots
-h = axes('Position', [0 0 1 1], 'XColor', 'none', 'YColor', 'none');
-ylabel('Angular velocity (rad/s)', 'Interpreter', 'latex', 'FontSize', 12, 'FontWeight', 'bold');
-
-% Plotting results for EP
+% EP unit constraint (algebraic check on trajectory)
 figure;
-subplot(4,1,1);
-plot(t,b0,'b-','LineWidth',2); 
-ylim([-1,1]);
-title('b0');
-%ylabel({'b0'});
+plot(t, UC2, 'b-', 'LineWidth', 0.75);
+ylim([-1e-13, 1e-13]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('EP unit constraint deviation [-]', 'FontName', paperFont);
 
-subplot(4,1,2);
-plot(t,b1,'r-','LineWidth',2); 
-ylim([-1,1]);
-title('b1');
-%ylabel({'b1'});
-grid on;
-
-subplot(4,1,3);
-plot(t,b2,'g-','LineWidth',2); 
-ylim([-1,1]);
-title('b2');
-%ylabel({'b2'});
-grid on;
-
-subplot(4,1,4);
-plot(t,b3,'c-','LineWidth',2); 
-ylim([-1,1]);
-title('b3');
-%ylabel({'b3'});
-grid on;
-
-% Plotting results for Unit constraints
+% Energy and angular momentum (deviations from initial invariants)
 figure;
-
-plot(t,UC2,'b-','LineWidth',0.5); 
-ylim([-1*10^-13,1*10^-13]);
-title('EP Unit costraint - Reference solution');
-ylabel('Violation');
+subplot(2, 1, 1);
+plot(t, Ener, 'b-', 'LineWidth', 1);
+ylim([-1e-13, 1e-13]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('Energy deviation [J]', 'FontName', paperFont);
 
-% Plotting results for Energy and Momentum
-figure;
-subplot(2,1,1);
-plot(t,Ener,'b-','LineWidth',1); 
-ylim([-1*10^-13,1*10^-13]);
-title('Total Energy');
-ylabel('Energy balance');
+subplot(2, 1, 2);
+plot(t, H_norm, 'r-', 'LineWidth', 1);
+ylim([-1e-13, 1e-13]);
 grid on;
-
-subplot(2,1,2);
-plot(t,H_norm,'r-','LineWidth',1); 
-ylim([-1*10^-13,1*10^-13]);
-title('Angular momentum(norm)');
-xlabel('Time (s)');
-ylabel('Ang moment');
-grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('Angular momentum norm deviation [J s]', 'FontName', paperFont);
 

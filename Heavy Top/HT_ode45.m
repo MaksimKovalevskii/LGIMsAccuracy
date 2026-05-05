@@ -186,14 +186,14 @@ AngAccY = second_derivatives(:,5);
 AngAccZ = second_derivatives(:,6);
 
 %constraint violations
-grC=zeros(size(t));
-grdC=zeros(size(t));
-grddC=zeros(size(t));
-n=length(t);
-for i=1:n
-grC(i)=(C(i,1)+C(i,2)+C(i,3))/3;  
-grdC(i)=(dC(i,1)+dC(i,2)+dC(i,3))/3;
-grddC(i)=(ddC(i,1)+ddC(i,2)+ddC(i,3))/3;
+grC = zeros(size(t));
+grdC = zeros(size(t));
+grddC = zeros(size(t));
+nt = length(t);
+for i = 1:nt
+    grC(i) = (C(i, 1) + C(i, 2) + C(i, 3)) / 3;
+    grdC(i) = (dC(i, 1) + dC(i, 2) + dC(i, 3)) / 3;
+    grddC(i) = (ddC(i, 1) + ddC(i, 2) + ddC(i, 3)) / 3;
 end
 
 executionTime = toc;
@@ -202,280 +202,124 @@ if ~exist('save_filename','var') || isempty(save_filename)
 end
 save(save_filename, '-v7.3');
 
-% Plotting results for x y z
+% --- Paper-style figures (Times New Roman, units in [], no titles, no minor grids)
+paperFont = 'Times New Roman';
+
+% Cartesian position, velocity, acceleration ($R_X,R_Y,R_Z$)
 figure;
-subplot(3,1,1);
-plot(t,x,'b--','LineWidth',1);
+subplot(3, 1, 1);
 hold on;
-plot(t,y,'r-','LineWidth',1); 
+plot(t, x, 'b--', 'LineWidth', 1);
+plot(t, y, 'r-', 'LineWidth', 1);
+plot(t, z, 'g-', 'LineWidth', 1);
+ylim([-1, 1]);
+grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('Displacement [m]', 'FontName', paperFont);
+legend({'$R_X$', '$R_Y$', '$R_Z$'}, 'Interpreter', 'latex', 'Location', 'best', 'FontName', paperFont);
+
+subplot(3, 1, 2);
 hold on;
-plot(t,z,'g-','LineWidth',1); 
-ylim([-1,1]);
-title('Rx, Ry, Rz');
-ylabel('Displacements, m');
+plot(t, xd, 'b--', 'LineWidth', 1);
+plot(t, yd, 'r-', 'LineWidth', 1);
+plot(t, zd, 'g-', 'LineWidth', 1);
+ylim([-10, 10]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('Velocity [m/s]', 'FontName', paperFont);
 
-subplot(3,1,2);
-plot(t,xd,'b--','LineWidth',1); 
+subplot(3, 1, 3);
 hold on;
-plot(t,yd,'r-','LineWidth',1); 
-hold on;
-plot(t,zd,'g-','LineWidth',1); 
-ylim([-10,10]);
-title('Rx'', Ry'', Rz'' (t)');
-ylabel({'Velocities'; '(m/s)'});
+plot(t, x_double_prime, 'b--', 'LineWidth', 1);
+plot(t, y_double_prime, 'r-', 'LineWidth', 1);
+plot(t, z_double_prime, 'g-', 'LineWidth', 1);
+ylim([-50, 45]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('Acceleration [m/s$^2$]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,3);
-plot(t,x_double_prime,'b--','LineWidth',1); 
-hold on;
-plot(t,y_double_prime,'r-','LineWidth',1); 
-hold on;
-plot(t,z_double_prime,'g-','LineWidth',1); 
-ylim([-50,45]);
-title('Rx'''', Ry'''', Rz''''(t)');
-xlabel('Time (s)');
-ylabel({'Accelerations'; '(m/s^2)'});
-legend ('Rx','Ry','Rz');
-grid on;
-
-% Plotting results for x
+% Angular velocity
 figure;
-subplot(3,1,1);
-plot(t,x,'b-','LineWidth',2);
-ylim([-1,1]);
-title('Rx(t)');
-ylabel('Displacement X, m');
+subplot(3, 1, 1);
+plot(t, wx, 'b-', 'LineWidth', 1.5);
+ylim([-7, 7]);
 grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$\omega_x$ [rad/s]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-subplot(3,1,2);
-plot(t,xd,'r-','LineWidth',2); 
-ylim([-10,10]);
-title('Rx''(t)');
-ylabel({'Velocity X'; '(m/s)'});
-grid on;
-
-subplot(3,1,3);
-plot(t,x_double_prime,'g-','LineWidth',2); 
-ylim([-50,45]);
-title('Rx''''(t)');
-xlabel('Time (s)');
-ylabel({'Acceleration X'; '(m/s^2)'});
-grid on;
-
-% Plotting results for y
-figure;
-subplot(3,1,1);
-plot(t,y,'b-','LineWidth',2); 
-ylim([-1,1]);
-title('Ry(t)');
-ylabel('Displacement Y, m');
-grid on;
-
-subplot(3,1,2);
-plot(t,yd,'r-','LineWidth',2); 
-ylim([-10,10]);
-title('Ry''(t)');
-ylabel({'Velocity Y'; '(m/s)'});
-grid on;
-
-subplot(3,1,3);
-plot(t,y_double_prime,'g-','LineWidth',2); 
-ylim([-50,50]);
-title('Ry''''(t)');
-xlabel('Time (s)');
-ylabel({'Acceleration Y'; '(m/s^2)'});
-grid on;
-
-% Plotting results for z
-figure;
-subplot(3,1,1);
-plot(t,z,'b-','LineWidth',2); 
-ylim([-1.5,0.5]);
-title('Rz(t)');
-ylabel('Displacement Z, m');
-grid on;
-
-subplot(3,1,2);
-plot(t,zd,'r-','LineWidth',2); 
-ylim([-10,10]);
-title('Rz''(t)');
-ylabel({'Velocity Z'; '(m/s)'});
-grid on;
-
-subplot(3,1,3);
-plot(t,z_double_prime,'g-','LineWidth',2); 
-ylim([-40,50]);
-title('Rz''''(t)');
-xlabel('Time (s)');
-ylabel({'Acceleration Z'; '(m/s^2)'});
-grid on;
-
-% Plotting results for Angular velocities
-figure;
-subplot(3,1,1);
-plot(t,wx,'b-','LineWidth',2); 
-ylim([-7,7]);
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
-ylabel({'$\omega_x$ [rad/s]'}, 'Interpreter','latex');
-grid on;
-
-subplot(3,1,2);
-plot(t,wy,'r-','LineWidth',2); 
-ylim([0,200]);
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
-ylabel({'$\omega_y$ [rad/s]'}, 'Interpreter','latex');
-grid on;
-
-subplot(3,1,3);
-plot(t,wz,'g-','LineWidth',2); 
-ylim([-7,7]);
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
-xlabel('Time (s)');
-ylabel({'$\omega_z$ [rad/s]'}, 'Interpreter','latex');
-grid on;
-
-%Plotting results for Angular accelerations
-figure;
-subplot(3,1,1);
-plot(t,AngAccX,'b-','LineWidth',2); 
-ylim([-1000,1000]);
-title('Wx''');
-ylabel({'Ang acceleration Wx';' s-2'});
-grid on;
-
-subplot(3,1,2);
-plot(t,AngAccY,'r-','LineWidth',2); 
-ylim([-3,3]);
-title('Wy''');
-ylabel({'Ang acceleration Wy';' s-2'});
-grid on;
-
-subplot(3,1,3);
-plot(t,AngAccZ,'g-','LineWidth',2); 
-ylim([-1000,1000]);
-title('Wz''');
-ylabel({'Ang acceleration Wz';' s-2'});
-grid on;
-
-
-% Plotting results for Constraint violation and Energy balance
-figure;
-subplot(4,1,1);
-plot(t,grC,'b-','LineWidth',0.5); 
-ylim([-1*10^-12,1*10^-12]);
-title('∣∣C∣∣');
-ylabel('Violation');
-grid on;
-
-subplot(4,1,2);
-plot(t,grdC,'g-','LineWidth',1); 
-ylim([-1*10^-12,1*10^-12]);
-title('∣∣C''∣∣');
-ylabel('Violation');
-grid on;
-
-subplot(4,1,3);
-plot(t,grddC,'r-','LineWidth',1); 
-ylim([-5*10^-12,5*10^-12]);
-title('∣∣C''''∣∣');
-ylabel('Violation');
-grid on;
-
-subplot(4,1,4);
-plot(t,Ener,'b-','LineWidth',1); 
-ylim([-1*10^-9,1*10^-9]);
-title('Total Energy');
-xlabel('Time (s)');
-ylabel('Energy balance');
-grid on;
-
-% Plotting results for Unit constraints
-figure;
-plot(t,UC,'b-','LineWidth',0.5); 
-ylim([-1*10^-13,1*10^-13]);
-title('Unit costraint - EP Lie');
-ylabel('Violation');
-grid on;
-
-% Plotting results for Constraint violation and Energy balance
-figure;
-subplot(4,1,1);
-plot(t,abs(grC),'b-','LineWidth',0.5);
-set(gca, 'YScale', 'log');
-	set(gca, 'YMinorTick', 'on');
-title('||C|| (Log scale)');
-ylabel('Violation');
-grid on;
-
-subplot(4,1,2);
-plot(t,abs(grdC),'g-','LineWidth',1);
-set(gca, 'YScale', 'log');
-	set(gca, 'YMinorTick', 'on');
-title('||C''|| (Log scale)');
-ylabel('Violation');
-grid on;
-
-subplot(4,1,3);
-plot(t,abs(grddC),'r-','LineWidth',1);
-set(gca, 'YScale', 'log');
-	set(gca, 'YMinorTick', 'on');
-title('||C''''|| (Log scale)');
-ylabel('Violation');
-grid on;
-
-subplot(4,1,4);
-plot(t,abs(Ener),'b-','LineWidth',1);
-set(gca, 'YScale', 'log');
-	set(gca, 'YMinorTick', 'on');
-title('Total Energy (Log scale)');
-xlabel('Time (s)');
-ylabel('Energy balance');
-grid on;
-
-figure;
-subplot(3,1,1);
-plot(t,x,'b-','LineWidth',2);
-ylim([-1,1]);
-ylabel('$R_X$ [m]', 'Interpreter', 'latex');
-grid on;
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
-
-subplot(3,1,2);
-plot(t,xd,'r-','LineWidth',2); 
-ylim([-10,10]);
-ylabel('$\dot{R}_X$ [m/s]', 'Interpreter', 'latex');
-grid on;
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
-
-subplot(3,1,3);
-plot(t,x_double_prime,'g-','LineWidth',2); 
-ylim([-50,45]);
-xlabel('Time (s)', 'Interpreter','latex');
-ylabel('$\ddot{R}_X$ [m/s$^2$]', 'Interpreter', 'latex');
-grid on;
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
-
-
-figure;
-
-% --- Subplot 1: wy ---
-subplot(2,1,1);
+subplot(3, 1, 2);
 plot(t, wy, 'r-', 'LineWidth', 1.5);
-xlim([0 2]);
-ylim([0 200]);
-ylabel({'$\omega_y$ [rad/s]'}, 'Interpreter','latex');
+ylim([0, 200]);
 grid on;
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$\omega_y$ [rad/s]', 'Interpreter', 'latex', 'FontName', paperFont);
 
-% --- Subplot 2: wx and wz ---
-subplot(2,1,2);
-plot(t, wx, 'b-', 'LineWidth', 1.5); hold on;
+subplot(3, 1, 3);
 plot(t, wz, 'g-', 'LineWidth', 1.5);
-xlim([0 2]);
-ylim([-7 7]);
-xlabel('Time (s)', 'Interpreter','latex');
-ylabel({'$\omega_x,\ \omega_z$ [rad/s]'}, 'Interpreter','latex');
+ylim([-7, 7]);
 grid on;
-set(gca, 'FontName','Times New Roman', 'FontSize',12);
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('$\omega_z$ [rad/s]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+% Angular acceleration
+figure;
+subplot(3, 1, 1);
+plot(t, AngAccX, 'b-', 'LineWidth', 1.5);
+ylim([-1000, 1000]);
+grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$\dot{\omega}_x$ [rad/s$^2$]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+subplot(3, 1, 2);
+plot(t, AngAccY, 'r-', 'LineWidth', 1.5);
+ylim([-3, 3]);
+grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+ylabel('$\dot{\omega}_y$ [rad/s$^2$]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+subplot(3, 1, 3);
+plot(t, AngAccZ, 'g-', 'LineWidth', 1.5);
+ylim([-1000, 1000]);
+grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('$\dot{\omega}_z$ [rad/s$^2$]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+% Constraint residuals and energy (log magnitude)
+figure;
+subplot(4, 1, 1);
+plot(t, abs(grC), 'b-', 'LineWidth', 0.75);
+set(gca, 'YScale', 'log', 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+grid on;
+ylabel('$||\mathbf{C}||$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+subplot(4, 1, 2);
+plot(t, abs(grdC), 'g-', 'LineWidth', 1);
+set(gca, 'YScale', 'log', 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+grid on;
+ylabel('$||\dot{\mathbf{C}}||$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+subplot(4, 1, 3);
+plot(t, abs(grddC), 'r-', 'LineWidth', 1);
+set(gca, 'YScale', 'log', 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+grid on;
+ylabel('$||\ddot{\mathbf{C}}||$ [-]', 'Interpreter', 'latex', 'FontName', paperFont);
+
+subplot(4, 1, 4);
+plot(t, abs(Ener), 'b-', 'LineWidth', 1);
+set(gca, 'YScale', 'log', 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+grid on;
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('Energy deviation magnitude [J]', 'FontName', paperFont);
+
+% EP unit constraint
+figure;
+plot(t, UC, 'b-', 'LineWidth', 0.75);
+ylim([-1e-13, 1e-13]);
+grid on;
+set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+xlabel('Time [s]', 'FontName', paperFont);
+ylabel('EP unit constraint deviation [-]', 'FontName', paperFont);
 
