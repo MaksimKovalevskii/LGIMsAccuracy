@@ -4,7 +4,7 @@ The heavy top is a classical benchmark problem in multibody system dynamics and 
 test case for Lie group integration methods.
 
 System used for development and testing:
-- Operating system: Windows 10 (64‑bit)
+- Operating system: Windows 10/11 (64‑bit)
 - Machine type: Work laptop, multi‑core CPU
 - MATLAB: R2024b (64‑bit), standard desktop installation
 - Disk: At least 25 GB free space recommended for full batch
