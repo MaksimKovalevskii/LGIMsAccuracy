@@ -1,2 +1,5 @@
 # MATLAB data files (not tracked)
 *.mat
+
+# Exported figures (not tracked)
+*.svg
