@@ -1,4 +1,4 @@
-% tic;
+tic;
 % Parameters
 psi10=0;
 psi20=0;
@@ -21,7 +21,7 @@ initial_conditions = [wx0; wy0; wz0;psi10; psi20; psi30];
 if ~exist('dt','var') || isempty(dt)
     dt = 0.001;
 end
-dt = 0.001;
+%dt = 0.001;
 % Time span
 tspan = 0:dt:t_end;
 
@@ -153,108 +153,108 @@ psi1 = F(:,4);
 psi2 = F(:,5);
 psi3 = F(:,6);
 
-% executionTime = toc;
-% if ~exist('save_filename','var') || isempty(save_filename)
-%     save_filename = sprintf('wrCart_NE_dt_%0.1fms.mat', dt*1000);
-% end
-% save(save_filename, '-v7.3');
+executionTime = toc;
+if ~exist('save_filename','var') || isempty(save_filename)
+    save_filename = sprintf('wrCart_NE_dt_%0.1fms.mat', dt*1000);
+end
+save(save_filename, '-v7.3');
 
-% Plotting results for Angular velocities
-figure;
-subplot(3,1,1);
-plot(t,wx,'b-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('Wx');
-ylabel({'Ang velocity Wx'; 's-1'});
-grid on;
-
-subplot(3,1,2);
-plot(t,wy,'r-','LineWidth',2); 
-ylim([-1.5,1.5]);
-title('Wy');
-ylabel({'Ang velocity Wy'; 's-1'});
-grid on;
-
-subplot(3,1,3);
-plot(t,wz,'g-','LineWidth',2); 
-ylim([-0.1,0.2]);
-title('Wz');
-ylabel({'Ang velocity Wz';'s-1'});
-grid on;
-
-% Plotting results for Cartesian rotation vector
-figure;
-subplot(3,1,1);
-plot(t,psi1,'b-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('Psi1');
-ylabel({'X rot vector'});
-grid on;
-
-subplot(3,1,2);
-plot(t,psi2,'r-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('Psi2');
-ylabel({'Y rot vector'});
-grid on;
-
-subplot(3,1,3);
-plot(t,psi3,'g-','LineWidth',2); 
-ylim([-3.5,3.5]);
-title('Psi3');
-ylabel({'Z rot vector'});
-grid on;
-
-% Plotting results for rotation angle theta (norm of Cartesian rotation vector)
-figure;
-hold on;
-plot(t, theta, 'b-', 'LineWidth', 1.5);
-yline(pi, 'r--', 'LineWidth', 1.2);
-ylim([-0.5, 3.5]);
-grid on;
-set(gca, 'FontName', 'Times New Roman', 'FontSize', 11, ...
-    'XMinorGrid', 'off', 'YMinorGrid', 'off', ...
-    'YTick', [0, 1, pi/2, 2, pi], ...
-    'YTickLabel', {'0', '1', '\pi/2', '2', '\pi'}, ...
-    'TickLabelInterpreter', 'tex');
-xlabel('Time [s]', 'FontName', 'Times New Roman');
-% MATLAB LaTeX does not reliably support \boldsymbol / \|; use \Vert (supported).
-ylabel('$\theta = \Vert \psi \Vert$ [rad]', 'Interpreter', 'latex', ...
-    'FontName', 'Times New Roman');
-legend('$\theta(t)$', '$\theta = \pi$', 'Interpreter', 'latex', ...
-    'FontName', 'Times New Roman', 'Location', 'best');
-hold off;
-
-% Plotting results for Energy and Momentum
-figure;
-subplot(2,1,1);
-plot(t,Ener,'b-','LineWidth',1); 
-ylim([-5*10^-1,5*10^-1]);
-title('Total Energy');
-ylabel('Energy balance');
-grid on;
-
-subplot(2,1,2);
-plot(t,H_norm,'r-','LineWidth',1); 
-ylim([-5*10^-1,5*10^-1]);
-title('Angular momentum(norm)');
-xlabel('Time (s)');
-ylabel('Ang moment');
-grid on;
-
-% Plotting results for orthogonality
-figure;
-subplot(2,1,1);
-plot(t,OrtDet,'b-','LineWidth',1); 
-ylim([-1*10^-13,1*10^-13]);
-title('Rotation matrix Orthogonality - determinant');
-ylabel('Num err');
-grid on;
-
-subplot(2,1,2);
-plot(t,OrtIdent,'r-','LineWidth',1); 
-ylim([-1*10^-13,1*10^-13]);
-title('Rotation matrix Orthogonality - identity');
-xlabel('Time (s)');
-ylabel('Num err');
-grid on;
+% % Plotting results for Angular velocities
+% figure;
+% subplot(3,1,1);
+% plot(t,wx,'b-','LineWidth',2); 
+% ylim([-3.5,3.5]);
+% title('Wx');
+% ylabel({'Ang velocity Wx'; 's-1'});
+% grid on;
+% 
+% subplot(3,1,2);
+% plot(t,wy,'r-','LineWidth',2); 
+% ylim([-1.5,1.5]);
+% title('Wy');
+% ylabel({'Ang velocity Wy'; 's-1'});
+% grid on;
+% 
+% subplot(3,1,3);
+% plot(t,wz,'g-','LineWidth',2); 
+% ylim([-0.1,0.2]);
+% title('Wz');
+% ylabel({'Ang velocity Wz';'s-1'});
+% grid on;
+% 
+% % Plotting results for Cartesian rotation vector
+% figure;
+% subplot(3,1,1);
+% plot(t,psi1,'b-','LineWidth',2); 
+% ylim([-3.5,3.5]);
+% title('Psi1');
+% ylabel({'X rot vector'});
+% grid on;
+% 
+% subplot(3,1,2);
+% plot(t,psi2,'r-','LineWidth',2); 
+% ylim([-3.5,3.5]);
+% title('Psi2');
+% ylabel({'Y rot vector'});
+% grid on;
+% 
+% subplot(3,1,3);
+% plot(t,psi3,'g-','LineWidth',2); 
+% ylim([-3.5,3.5]);
+% title('Psi3');
+% ylabel({'Z rot vector'});
+% grid on;
+% 
+% % Plotting results for rotation angle theta (norm of Cartesian rotation vector)
+% figure;
+% hold on;
+% plot(t, theta, 'b-', 'LineWidth', 1.5);
+% yline(pi, 'r--', 'LineWidth', 1.2);
+% ylim([-0.5, 3.5]);
+% grid on;
+% set(gca, 'FontName', 'Times New Roman', 'FontSize', 11, ...
+%     'XMinorGrid', 'off', 'YMinorGrid', 'off', ...
+%     'YTick', [0, 1, pi/2, 2, pi], ...
+%     'YTickLabel', {'0', '1', '\pi/2', '2', '\pi'}, ...
+%     'TickLabelInterpreter', 'tex');
+% xlabel('Time [s]', 'FontName', 'Times New Roman');
+% % MATLAB LaTeX does not reliably support \boldsymbol / \|; use \Vert (supported).
+% ylabel('$\theta = \Vert \psi \Vert$ [rad]', 'Interpreter', 'latex', ...
+%     'FontName', 'Times New Roman');
+% legend('$\theta(t)$', '$\theta = \pi$', 'Interpreter', 'latex', ...
+%     'FontName', 'Times New Roman', 'Location', 'best');
+% hold off;
+% 
+% % Plotting results for Energy and Momentum
+% figure;
+% subplot(2,1,1);
+% plot(t,Ener,'b-','LineWidth',1); 
+% ylim([-5*10^-1,5*10^-1]);
+% title('Total Energy');
+% ylabel('Energy balance');
+% grid on;
+% 
+% subplot(2,1,2);
+% plot(t,H_norm,'r-','LineWidth',1); 
+% ylim([-5*10^-1,5*10^-1]);
+% title('Angular momentum(norm)');
+% xlabel('Time (s)');
+% ylabel('Ang moment');
+% grid on;
+% 
+% % Plotting results for orthogonality
+% figure;
+% subplot(2,1,1);
+% plot(t,OrtDet,'b-','LineWidth',1); 
+% ylim([-1*10^-13,1*10^-13]);
+% title('Rotation matrix Orthogonality - determinant');
+% ylabel('Num err');
+% grid on;
+% 
+% subplot(2,1,2);
+% plot(t,OrtIdent,'r-','LineWidth',1); 
+% ylim([-1*10^-13,1*10^-13]);
+% title('Rotation matrix Orthogonality - identity');
+% xlabel('Time (s)');
+% ylabel('Num err');
+% grid on;
