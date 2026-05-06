@@ -7,7 +7,7 @@ t_end = 100;  % End value for time
 if ~exist('dt', 'var') || isempty(dt)
     dt = 0.01;   % Time step (default 10 ms)
 end
-
+dt=0.001
 I = [3.0025 0 0; 0 3.0025 0; 0 0 0.005];
 
 % Initial conditions
@@ -192,7 +192,7 @@ if ~exist('save_filename', 'var') || isempty(save_filename)
 end
 save(save_filename, '-v7.3');
 
-% % Plotting results for x
+% Plotting results for x
 % figure;
 % subplot(3,1,1);
 % plot(t,x,'b-','LineWidth',2);
@@ -216,7 +216,7 @@ save(save_filename, '-v7.3');
 % ylabel({'Acceleration X'; '(m/s^2)'});
 % grid on;
 % 
-% % Plotting results for y
+% Plotting results for y
 % figure;
 % subplot(3,1,1);
 % plot(t,y,'b-','LineWidth',2); 
@@ -240,7 +240,7 @@ save(save_filename, '-v7.3');
 % ylabel({'Acceleration Y'; '(m/s^2)'});
 % grid on;
 % 
-% % Plotting results for z
+% Plotting results for z
 % figure;
 % subplot(3,1,1);
 % plot(t,z,'b-','LineWidth',2); 
@@ -264,7 +264,7 @@ save(save_filename, '-v7.3');
 % ylabel({'Acceleration Z'; '(m/s^2)'});
 % grid on;
 % 
-% % Plotting results for b0
+% Plotting results for b0
 % figure;
 % subplot(3,1,1);
 % plot(t,b0,'b-','LineWidth',2); 
@@ -288,7 +288,7 @@ save(save_filename, '-v7.3');
 % ylabel('2nd Derivative b0');
 % grid on;
 % 
-% % Plotting results for b1 and b2
+% Plotting results for b1 and b2
 % figure;
 % subplot(3,1,1);
 % plot(t,b1,'b-','LineWidth',2); 
@@ -319,7 +319,7 @@ save(save_filename, '-v7.3');
 % ylabel('2nd Derivatives');
 % grid on;
 % 
-% % Plotting results for b3
+% Plotting results for b3
 % figure;
 % subplot(3,1,1);
 % plot(t,b3,'b-','LineWidth',2); 
@@ -343,7 +343,7 @@ save(save_filename, '-v7.3');
 % ylabel('2nd Derivative b3');
 % grid on;
 % 
-% % Plotting results for Constraint violation and Energy balance
+% Plotting results for Constraint violation and Energy balance
 % figure;
 % subplot(4,1,1);
 % plot(t,C,'b-','LineWidth',0.5); 
@@ -374,7 +374,7 @@ save(save_filename, '-v7.3');
 % ylabel('Energy balance');
 % grid on;
 % 
-% % Plotting results for Unit constraints
+% Plotting results for Unit constraints
 % figure;
 % plot(t,UC2,'b-','LineWidth',0.5); 
 % ylim([-5*10^-1,5*10^-1]);
@@ -382,7 +382,7 @@ save(save_filename, '-v7.3');
 % ylabel('Violation');
 % grid on;
 % 
-% % Plotting results for Constraint violation and Energy balance
+% Plotting results for Constraint violation and Energy balance
 % figure;
 % subplot(4,1,1);
 % plot(t,abs(C),'b-','LineWidth',0.5);
@@ -417,10 +417,10 @@ save(save_filename, '-v7.3');
 % ylabel('Energy balance');
 % grid on;
 % 
-% % Plotting results for position, velocity, and acceleration with all x,y,z components together
+% Plotting results for position, velocity, and acceleration with all x,y,z components together
 % figure;
 % 
-% % Position
+% Position
 % subplot(3,1,1);
 % plot(t,x,'b-','LineWidth',2); hold on;
 % plot(t,y,'r-','LineWidth',2);
@@ -430,7 +430,7 @@ save(save_filename, '-v7.3');
 % ylabel('Displacement (m)');
 % grid on;
 % 
-% % Velocity
+% Velocity
 % subplot(3,1,2);
 % plot(t,xd,'b-','LineWidth',2); hold on;
 % plot(t,yd,'r-','LineWidth',2);
@@ -440,7 +440,7 @@ save(save_filename, '-v7.3');
 % ylabel('Velocity (m/s)');
 % grid on;
 % 
-% % Acceleration
+% Acceleration
 % subplot(3,1,3);
 % plot(t,x_double_prime,'b-','LineWidth',2); hold on;
 % plot(t,y_double_prime,'r-','LineWidth',2);
@@ -451,24 +451,25 @@ save(save_filename, '-v7.3');
 % ylabel('Acceleration (m/s²)');
 % grid on;
 % 
-% % Plotting results for x
+% Plotting results for x (paper style)
+% paperFont = 'Times New Roman';
 % figure;
-% subplot(3,1,1);
-% plot(t,x,'b-','LineWidth',2);
-% ylim([-3,3]);
-% title('$R_X(t)$', 'Interpreter', 'latex');
-% ylabel('Displacement X, m');
+% subplot(3, 1, 1);
+% plot(t, x, 'b-', 'LineWidth', 2);
+% ylim([-3, 3]);
 % grid on;
-% subplot(3,1,2);
-% plot(t,xd,'r-','LineWidth',2); 
-% ylim([-10,10]);
-% title('$\dot{R}_X(t)$', 'Interpreter', 'latex');
-% ylabel({'Velocity X'; '(m/s)'});
+% set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+% ylabel('$R_X$ [m]', 'Interpreter', 'latex', 'FontName', paperFont);
+% subplot(3, 1, 2);
+% plot(t, xd, 'r-', 'LineWidth', 2);
+% ylim([-10, 10]);
 % grid on;
-% subplot(3,1,3);
-% plot(t,x_double_prime,'g-','LineWidth',2); 
-% ylim([-20,20]);
-% title('$\ddot{R}_X(t)$', 'Interpreter', 'latex');
-% xlabel('Time (s)');
-% ylabel({'Acceleration X'; '(m/s²)'});
+% set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+% ylabel('$\dot{R}_X$ [m/s]', 'Interpreter', 'latex', 'FontName', paperFont);
+% subplot(3, 1, 3);
+% plot(t, x_double_prime, 'g-', 'LineWidth', 2);
+% ylim([-20, 20]);
 % grid on;
+% set(gca, 'FontName', paperFont, 'XMinorGrid', 'off', 'YMinorGrid', 'off');
+% xlabel('Time [s]', 'FontName', paperFont);
+% ylabel('$\ddot{R}_X$ [m/s$^2$]', 'Interpreter', 'latex', 'FontName', paperFont);
