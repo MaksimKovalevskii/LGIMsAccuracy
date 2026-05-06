@@ -16,4 +16,4 @@ System used for development and testing:
 - Operating system: Windows 10/11 (64‑bit)
 - Machine type: Work laptop, multi‑core CPU
 - MATLAB: R2024b (64‑bit), standard desktop installation
-- Disk: At least 25 GB free space recommended for full batch
+- Disk: At least 35 GB free space recommended for full batch
