@@ -9,6 +9,7 @@ run('Tennis_ode45');
 
 %% Full range (ms) — EP LGIM, NE EP, wrapped Cartesian NE, Cartesian LGIM
 time_steps_ms = [0.1, 0.2, 0.5, 1.0, 2.0, 5.0, 10.0, 20.0, 50.0, 100.0, 200.0, 500.0];
+%time_steps_ms = [100.0, 200.0, 500.0];
 
 % EP LGIM (Tennis_EP_LGIM.m)
 for j = 1:numel(time_steps_ms)

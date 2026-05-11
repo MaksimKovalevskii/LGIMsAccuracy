@@ -24,7 +24,7 @@ psid0=Emap20*w_vec0;
 
 Ghat0 = eye(3);  % since psi0 = [0;0;0]
 omega0_calc = Ghat0 * psid0;
-disp([omega0_calc, w_vec0]);
+%disp([omega0_calc, w_vec0]);
 
 t_end = 200;  % End value for time
 Iqq=[0.1 0 0; 0 1 0;0 0 10];

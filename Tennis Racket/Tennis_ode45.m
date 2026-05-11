@@ -70,7 +70,8 @@ UC  = 1 - b0^2  - b1^2 - b2^2 - b3^2;
 end
 
 
-options = odeset('RelTol', 1e-14, 'AbsTol', 1e-14);
+%options = odeset('RelTol', 1e-14, 'AbsTol', 1e-14);
+options = odeset('RelTol', 100*eps, 'AbsTol', 1e-16);
 % Solve the ODE using ode45 with the anonymous function
 [t, F] = ode45(@odesystem, tspan, initial_conditions, options);
 
