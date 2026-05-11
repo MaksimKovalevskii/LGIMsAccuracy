@@ -47,7 +47,7 @@ bd_init=0.5*Gint0'*w_vec0;
 initial_conditions = [x0;  y0; z0; xd0;yd0;zd0;b00; b10; b20;b30;bd_init];
 
 sj=[0;-l0;0];
-r0=A0*sj+[0;1;0]
+r0=A0*sj+[0;1;0];
 
 t_end = 20;  % End value for time
 % Time step (seconds)
