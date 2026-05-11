@@ -7,7 +7,6 @@ t_end = 100;  % End value for time
 if ~exist('dt', 'var') || isempty(dt)
     dt = 0.01;   % Time step (default 10 ms)
 end
-dt=0.001
 I = [3.0025 0 0; 0 3.0025 0; 0 0 0.005];
 
 % Initial conditions

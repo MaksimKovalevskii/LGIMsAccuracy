@@ -1,4 +1,5 @@
 tic;
+global wx0 wy0 wz0 xd0 yd0 zd0;
 % Parameters
 b10=0.27059805007;
 b20=0.27059805007;
@@ -22,8 +23,6 @@ gw0 = A0*[wx0 wy0 wz0]';
 xd0=gw0(2)*z0 - gw0(3)*y0;
 yd0=gw0(3)*x0 - gw0(1)*z0;
 zd0=gw0(1)*y0 - gw0(2)*x0;
-
-global wx0 wy0 wz0 xd0 yd0 zd0;
 
 t_end = 100;  % End value for time
 if ~exist('dt', 'var') || isempty(dt)

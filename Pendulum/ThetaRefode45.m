@@ -51,7 +51,8 @@ function [t, theta, x, y, z, xd, yd, zd, xdd, ydd, zdd] = exact_pendulum_solutio
 
     % Solve with high accuracy
     fprintf('Solving nonlinear pendulum ODE with high accuracy...\n');
-    options = odeset('RelTol', 1e-14, 'AbsTol', 1e-16);
+    % ode45 enforces RelTol >= 100*eps; match that explicitly (avoids odeset warning).
+    options = odeset('RelTol', 100*eps, 'AbsTol', 1e-16);
     [t, y] = ode45(@pendulum_ode, t_eval, y0, options);
 
     theta = y(:, 1);
