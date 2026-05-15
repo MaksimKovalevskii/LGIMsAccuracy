@@ -7,18 +7,19 @@ System used for development and testing:
 - Operating system: Windows 10/11 (64‑bit)
 - Machine type: Work laptop, multi‑core CPU
 - MATLAB: R2024b (64‑bit), standard desktop installation
-- Disk: At least 25 GB free space recommended for full batch
+- Disk: Full batch `.mat` outputs are typically ~5 GB; allow **at least 6 GB** free (headroom).
 
 Instructions
 
 1) Copy all files from this `Heavy Top` directory into a single folder on your local machine (or clone the GitHub repository and work directly in the `Heavy Top` folder).
+   Alternatively, from the repository root, run `run_all` to execute all three examples in one go (see the main `README.md`).
 2) Open MATLAB R2024b (or a compatible recent version) and set the current folder to this `Heavy Top` directory.
 3) Run `Run_HeavyTop_batch.m`.  
    This script will:
    - Simulate the heavy top problem with 5 numerical integration methods, for a list of time steps given in milliseconds.
    - For each method and each time step, save a `.mat` database with simulation results.
    - Additionally compute a high‑accuracy reference solution using `ode45` and save it as `HTRef.mat`.
-   Note: running the full batch requires at least 25 GB of free disk space.
+   Note: allow at least 6 GB of free disk space for full-batch `.mat` outputs.
 
 Estimated runtime for full batch (all methods, all time steps): 30–45 minutes on a typical modern laptop similar to the system described above. Actual time depends on CPU performance and MATLAB version.
 

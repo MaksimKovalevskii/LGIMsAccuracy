@@ -9,12 +9,14 @@ System used for development and testing:
 - Operating system: Windows 10/11 (64-bit)
 - Machine type: Work laptop, multi-core CPU
 - MATLAB: R2024b (64-bit), standard desktop installation
-- Disk: At least 5 GB free space recommended for a full batch of all methods and time steps
+- Disk: Full batch `.mat` outputs are typically ~3 GB; allow **at least 4 GB** free (headroom).
 
 Instructions
 
 1) Copy all files from this `Pendulum` directory into a single folder on your local machine
    (or clone the GitHub repository and work directly in the `Pendulum` folder).
+   Alternatively, from the repository root, run `run_all` to execute Pendulum, Tennis racket,
+   and Heavy Top in one go (see the main `README.md`).
 2) Open MATLAB R2024b (or a compatible recent version) and set the current folder to this
    `Pendulum` directory.
 3) Run `Run_Pendulum_Batch` (the function defined in `Run_Pendulum_Batch.m`).
