@@ -21,7 +21,7 @@ cd('<path-to>/LGIMsAccuracy')   % repository root
 run_all
 ```
 
-`run_all.m` executes, in order: Pendulum (`Run_Pendulum_Batch` + `PendulumPlotting`), Tennis racket (`Run_Tennis_Full_Batch` + `Tennis_Plotting`), and Heavy Top (`Run_HeavyTop_batch` + `HeavyTop_plotting`). Each example is run in its own folder; allow several hours for a full run. You can still run any example individually using the README in that folder.
+`run_all.m` executes, in order: Pendulum (`Run_Pendulum_Batch` + `PendulumPlotting`), Tennis racket (`Run_Tennis_Full_Batch` + `Tennis_Plotting`), and Heavy Top (`Run_HeavyTop_batch` + `HeavyTop_plotting`). Each example is run in its own folder; allow up to 1 hour for a full run. You can still run any example individually using the README in that folder.
 
 System used for development and testing:
 - Operating system: Windows 10/11 (64‑bit)
