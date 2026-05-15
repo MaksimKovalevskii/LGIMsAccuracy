@@ -109,7 +109,7 @@ function [t, F, theta,Ener,H_norm,OrtDet,OrtIdent] = custom_rk4(odefun, tspan, y
        psi = yi(4:6);
        Phi = norm(psi);
       if Phi > pi
-fprintf('Wrapping RK4: Phi = %.3f -> ', Phi)
+%fprintf('Wrapping RK4: Phi = %.3f -> ', Phi)
            psi = -(2*pi - Phi) * (psi / Phi);
         yi(4:6) = psi;  % Update yi with wrapped psi
     end

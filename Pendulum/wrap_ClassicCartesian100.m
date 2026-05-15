@@ -140,7 +140,7 @@ function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,thet
         psi = yi(4:6);
         Phi = norm(psi);
         if Phi > pi
-fprintf('Wrapping RK4: Phi = %.3f -> ', Phi)
+%fprintf('Wrapping RK4: Phi = %.3f -> ', Phi)
             psi = -(2*pi - Phi) * (psi / Phi);
             yi(4:6) = psi;  % Update yi with wrapped psi
         end

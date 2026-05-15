@@ -141,7 +141,7 @@ function [t, F, second_derivatives,C, dC,ddC,Ener] = custom_rk4(odefun, tspan, y
         psi = yi(10:12);
         Phi = norm(psi);
         if Phi > pi
-fprintf('Wrapping RK4: Phi = %.3f -> ', Phi)
+%fprintf('Wrapping RK4: Phi = %.3f -> ', Phi)
             psi = -(2*pi - Phi) * (psi / Phi);
             yi(10:12) = psi;  % Update yi with wrapped psi
         end
