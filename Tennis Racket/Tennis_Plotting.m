@@ -2,6 +2,10 @@
 
 time_steps = [0.1, 0.2, 0.5, 1, 2, 5, 10, 20, 50, 100, 200, 500];
 
+% Largest dt (ms) simulated in Run_Tennis_Full_Batch for conventional methods only
+classic_ep_max_ms = 20;
+classic_cart_max_ms = 0.1;
+
 method_names = {'Conv-Quat', 'Conv-CRV', 'NE-Quat', 'NE-CRV', 'CRV-LGIM', 'Quat-LGIM'};
 file_patterns = {'ClassicEP_dt_%.1fms.mat', 'ClassicCart_dt_%.1fms.mat', 'EP_NE_dt_%.1fms.mat', ...
     'wrCart_NE_dt_%.1fms.mat', 'wrLGIM_dt_%.1fms.mat', 'EP_LGIM_dt_%.1fms.mat'};
@@ -30,6 +34,12 @@ uc_last_step = nan(num_methods, length(time_steps));
 for i = 1:length(time_steps)
     dt = time_steps(i);
     for m = 1:num_methods
+        if m == 1 && dt > classic_ep_max_ms
+            continue
+        end
+        if m == 2 && dt > classic_cart_max_ms
+            continue
+        end
         if m == 2
             filename = sprintf('ClassicCart_dt_%gms.mat', dt);
         else
