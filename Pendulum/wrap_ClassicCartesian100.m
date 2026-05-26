@@ -49,25 +49,26 @@ I=[3.0025 0 0; 0 3.0025 0;0 0 0.005]; %Moment of Inertia
 Gint=GmatrixCart(x, y, z, psi1, psi2, psi3);%Function for matrix G
 
 phi=theta;
- if abs(phi) < 1e-8
+ % Keep small-angle threshold consistent with GmatrixCart (uses Taylor for phi < 1e-5)
+ if abs(phi) < 1e-5
         % Small angle: G ≈ I - 0.5*PsiHat + (1/12)*PsiHat^2
         GhatDot = -0.5*PsiHatDot + (1/12)*(PsiHatDot*PsiHat + PsiHat*PsiHatDot);
     else
         cos_phi = cos(phi);
         sin_phi = sin(phi);
-        phi_dot = (psi' * Psid) / phi;
-        
-        % Coefficients
+        phi_dot = (psi * Psid.') / phi;
+
+        % Coefficients (Rodrigues G = I - c1*PsiHat + c2*PsiHat^2)
         c1 = (1 - cos_phi) / phi^2;
         c2 = (phi - sin_phi) / phi^3;
-        
-        % Time derivatives of coefficients
-        c1_dot = (phi * sin_phi - 2 * (1 - cos_phi)) * phi_dot / phi^3;
-        c2_dot = (1 - cos_phi - phi * sin_phi + 2 * (phi - sin_phi)) * phi_dot / phi^4;
-        
-        GhatDot = -PsiHatDot * c1 - PsiHat * c1_dot + ...
+
+        % dc1/dphi, dc2/dphi (same as Tennis_Classic_Cart.m)
+        dc1_dphi = (phi * sin_phi + 2 * cos_phi - 2) / phi^3;
+        dc2_dphi = (-phi * cos_phi - 2 * phi + 3 * sin_phi) / phi^4;
+
+        GhatDot = -PsiHatDot * c1 - PsiHat * (dc1_dphi * phi_dot) + ...
                   (PsiHatDot * PsiHat + PsiHat * PsiHatDot) * c2 + ...
-                  PsiHat * PsiHat * c2_dot;
+                  PsiHat * PsiHat * (dc2_dphi * phi_dot);
     end
 
 omegaint=Gint*Psid';
