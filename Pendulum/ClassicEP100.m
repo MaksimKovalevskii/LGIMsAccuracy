@@ -15,7 +15,22 @@ initial_conditions = [6.*(b10.*b30+b00.*b20); 6.*(b20.*b30-b00.*b10); 3.*(1-2.*b
 % Time span
 tspan = 0:dt:t_end;
 
-function [dydt, second_derivatives]= odesystem(t, F)
+% Initial total energy E0 (same definition as NE/LGIM: 0.5*qd'*M*qd + m*g*z)
+z0_energy = initial_conditions(3);
+qd0_energy = initial_conditions(8:14)';
+b0e = initial_conditions(4);
+b1e = initial_conditions(5);
+b2e = initial_conditions(6);
+b3e = initial_conditions(7);
+Gint_e = 2.*[-b1e b0e  b3e -b2e;
+    -b2e -b3e  b0e b1e;
+    -b3e b2e  -b1e b0e];
+Mqq_e = Gint_e'*I*Gint_e;
+M_energy0 = [eye(3) zeros(3,4);
+    zeros(4,3) Mqq_e];
+E0_energy = 0.5*(qd0_energy*M_energy0*qd0_energy') + 9.8*z0_energy;
+
+function [dydt, second_derivatives, Ener_out]= odesystem(t, F, E0_ref)
     x = F(1);
     y = F(2);
     z = F(3);
@@ -81,41 +96,51 @@ NewRes=Mat\Forces;
 
  second_derivatives = NewRes(1:7);
 
+qd_energy = [xd yd zd b0d b1d b2d b3d];
+% Ener_out (not "Ener"): script local functions share one workspace; assigning
+% Ener here would overwrite the time-history vector built in custom_rk4.
+Ener_out = 0.5*(qd_energy*M*qd_energy') + 9.8*z - E0_ref;
+
 end
 
 % Custom Runge-Kutta 4th order method
-function [t, F, second_derivatives] = custom_rk4(odefun, tspan, y0)
+function [t, F, second_derivatives, Ener] = custom_rk4(odefun, tspan, y0)
     n = length(tspan);
     F_temp = zeros(length(y0), n);
     F_temp(:,1) = y0;
 
     second_derivatives = zeros(7, n);
+    Ener = zeros(1, n);
   
     for i = 1:(n-1)
         h = tspan(i+1) - tspan(i);
         ti = tspan(i);
         yi = F_temp(:,i);
         
-        [k1, sd1] = odefun(ti, yi);
-        [k2, ~] = odefun(ti + h/2, yi + h*k1/2);
-        [k3, ~] = odefun(ti + h/2, yi + h*k2/2);
-        [k4, ~] = odefun(ti + h, yi + h*k3);
+        [k1, sd1, e1] = odefun(ti, yi);
+        [k2, ~, ~] = odefun(ti + h/2, yi + h*k1/2);
+        [k3, ~, ~] = odefun(ti + h/2, yi + h*k2/2);
+        [k4, ~, ~] = odefun(ti + h, yi + h*k3);
         
         F_temp(:,i+1) = yi + (h/6)*(k1 + 2*k2 + 2*k3 + k4);
-        second_derivatives(:,i) = sd1;  
+        second_derivatives(:,i) = sd1;
+        Ener(:,i) = e1;
     
     end
-    [~, sd_final] = odefun(tspan(end), F_temp(:,end));
+    [~, sd_final, e_final] = odefun(tspan(end), F_temp(:,end));
     second_derivatives(:,end) = sd_final;
+    Ener(:,end) = e_final;
 
     t = tspan;
     F = F_temp';
     second_derivatives = second_derivatives';
+    Ener = Ener';
 
 end
 
-% Solve the ODE using custom RK4
-[t, F, second_derivatives] = custom_rk4(@odesystem, tspan, initial_conditions);
+% Solve the ODE using custom RK4 (pass E0 explicitly; local functions do not share script vars)
+odefun = @(t, F) odesystem(t, F, E0_energy);
+[t, F, second_derivatives, Ener] = custom_rk4(odefun, tspan, initial_conditions);
 
 % Extract results from F matrix
     x = F(:,1);
@@ -162,26 +187,8 @@ ddC3=z_double_prime + 12.*b1.*b1_double_prime+12.*b2.*b2_double_prime +12.*b1d.*
 ddC4=2.*b0.*b0_double_prime+2.*b3.*b3_double_prime+2.*b1.*b1_double_prime+2.*b2.*b2_double_prime +2.*b1d.*b1d+2.*b2d.*b2d+2.*b0d.*b0d+2.*b3d.*b3d;
 ddC=(ddC1+ddC2+ddC3+ddC4)/4; %C''
 
-% Calculate Energy balance for plotting
-for i = 1:length(t)
-qd= [xd(i) yd(i) zd(i) b0d(i) b1d(i) b2d(i) b3d(i)];
-
-Gint=2.*[-b1(i) b0(i)  b3(i) -b2(i);
--b2(i) -b3(i)  b0(i) b1(i);
--b3(i) b2(i)  -b1(i) b0(i)];
-
-Mqq=Gint'*I*Gint;
-MEner=[1 0 0 0 0 0 0;
-0 1 0 0 0 0 0;
-0 0 1 0 0 0 0;
- 0 0 0 Mqq(1,1) Mqq(1,2) Mqq(1,3) Mqq(1,4);
-    0 0 0 Mqq(2,1) Mqq(2,2) Mqq(2,3) Mqq(2,4);
-    0 0 0 Mqq(3,1) Mqq(3,2) Mqq(3,3) Mqq(3,4);
-    0 0 0 Mqq(4,1) Mqq(4,2) Mqq(4,3) Mqq(4,4)];
-
-Ener232(i)=0.5 * (qd * MEner * qd')+9.8.*(z(i)-z(1));
-end
-Enernew2=Ener232';
+% Energy balance E(t) - E0 from RK4 (same convention as NE_EP / EP_LGIM)
+Enernew2 = Ener(:);
 
 UC2 = 1 - b0.^2  - b1.^2 - b2.^2 - b3.^2;
 

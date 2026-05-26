@@ -17,11 +17,21 @@ initial_conditions = [1.5; -1.5; 2.12132034356;psi10;psi20;psi30;0;0;0;0;0;0];
 % Time span
 tspan = 0:dt:t_end;
 
+% Initial total energy E0 
+z0_energy = initial_conditions(3);
+qd0_energy = initial_conditions(7:12)';
+G_energy0 = GmatrixCart(initial_conditions(1), initial_conditions(2), ...
+    initial_conditions(3), initial_conditions(4), initial_conditions(5), initial_conditions(6));
+Mqq_e = G_energy0'*I*G_energy0;
+M_energy0 = [eye(3) zeros(3,3);
+    zeros(3,3) Mqq_e];
+E0_energy = 0.5*(qd0_energy*M_energy0*qd0_energy') + 9.8*z0_energy;
+
 function S = skew(v)
     S = [0 -v(3) v(2); v(3) 0 -v(1); -v(2) v(1) 0];
 end
 
-function [dydt, second_derivatives, C_val, Cq_qd_val, C_ddot, theta]= odesystem(t, F)
+function [dydt, second_derivatives, C_val, Cq_qd_val, C_ddot, theta, Ener_out]= odesystem(t, F, E0_ref)
     x = F(1);
     y = F(2);
     z = F(3);
@@ -116,10 +126,13 @@ NewRes=Mat\Forces; %Expression for q'' and lagrange multipliers
 
 second_derivatives = NewRes(1:6); % determine 2nd derivatives right here
 C_ddot = Cq * second_derivatives - Qc; % Cq*q_ddot + (Cq*qd)_q*qd = Cq*q_ddot - Qc
+
+qd_energy = [xd yd zd psi1d psi2d psi3d];
+Ener_out = 0.5*(qd_energy*M*qd_energy') + 9.8*z - E0_ref;
 end
 
 % Custom Runge-Kutta 4th order method
-function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,theta_history] = custom_rk4(odefun, tspan, y0)
+function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,theta_history,Ener] = custom_rk4(odefun, tspan, y0)
     n = length(tspan);
     F_temp = zeros(length(y0), n);
     F_temp(:,1) = y0;
@@ -130,7 +143,7 @@ function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,thet
     Cq_qd_history = zeros(3, n);
     C_ddot_history = zeros(3, n);
     theta_history = zeros (1,n);
-    
+    Ener = zeros(1, n);
 
     for i = 1:(n-1)
         h = tspan(i+1) - tspan(i);
@@ -146,10 +159,10 @@ function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,thet
             yi(4:6) = psi;  % Update yi with wrapped psi
         end
 
-        [k1, sd1, C1, Cqd1, C_ddot1,theta1] = odefun(ti, yi);
-        [k2, ~] = odefun(ti + h/2, yi + h*k1/2);
-        [k3, ~] = odefun(ti + h/2, yi + h*k2/2);
-        [k4, ~] = odefun(ti + h, yi + h*k3);
+        [k1, sd1, C1, Cqd1, C_ddot1, theta1, e1] = odefun(ti, yi);
+        [k2, ~, ~, ~, ~, ~, ~] = odefun(ti + h/2, yi + h*k1/2);
+        [k3, ~, ~, ~, ~, ~, ~] = odefun(ti + h/2, yi + h*k2/2);
+        [k4, ~, ~, ~, ~, ~, ~] = odefun(ti + h, yi + h*k3);
         
         F_temp(:,i+1) = yi + (h/6)*(k1 + 2*k2 + 2*k3 + k4);
         second_derivatives(:,i) = sd1;  
@@ -157,15 +170,17 @@ function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,thet
         Cq_qd_history(:,i) = Cqd1;
         C_ddot_history(:,i) = C_ddot1;
         theta_history(:,i) = theta1;
+        Ener(:,i) = e1;
     
     end
      % just for end point
-    [~, sd_final,C_final,Cqd_final,C_ddot_final,theta_final] = odefun(tspan(end), F_temp(:,end));
+    [~, sd_final,C_final,Cqd_final,C_ddot_final,theta_final,e_final] = odefun(tspan(end), F_temp(:,end));
     second_derivatives(:,end) = sd_final;
     C_history(:,end) = C_final;
     Cq_qd_history(:,end) = Cqd_final;
     C_ddot_history(:,end) = C_ddot_final;
     theta_history(:,end) = theta_final;
+    Ener(:,end) = e_final;
 
     t = tspan;
     F = F_temp';
@@ -174,11 +189,13 @@ function [t, F, second_derivatives,C_history, Cq_qd_history, C_ddot_history,thet
     Cq_qd_history = Cq_qd_history';
     C_ddot_history = C_ddot_history';
     theta_history = theta_history';
+    Ener = Ener';
 
 end
 
-% Solve the ODE using custom RK4
-[t, F, second_derivatives, C_history, Cq_qd_history, C_ddot_history,theta_history] = custom_rk4(@odesystem, tspan, initial_conditions);
+% Solve the ODE using custom RK4 (pass E0 explicitly; local functions do not share script vars)
+odefun = @(t, F) odesystem(t, F, E0_energy);
+[t, F, second_derivatives, C_history, Cq_qd_history, C_ddot_history, theta_history, Ener] = custom_rk4(odefun, tspan, initial_conditions);
 theta_history (1,1) = sqrt(psi10^2+psi20^2+psi30^2);
 
 % Extract results from F matrix
@@ -208,21 +225,8 @@ C = max(abs(C_history), [], 2);
 dC = max(abs(Cq_qd_history), [], 2); 
 ddC = max(abs(C_ddot_history), [], 2);
 
-% Calculate Energy balance for plotting
-for i = 1:length(t)
-q = [x(i) y(i) z(i) psi1(i) psi2(i) psi3(i)];
-
-    qd= [xd(i) yd(i) zd(i) psi1d(i) psi2d(i) psi3d(i)];
-
-Gint = GmatrixCart(x(i), y(i), z(i), psi1(i), psi2(i), psi3(i));
-
-Mqq=Gint'*I*Gint;
-M = [eye(3) zeros(3,3);
-    zeros(3,3) Mqq]; %Mass Matrix
-
-Ener2(i)=0.5 * (qd * M * qd')+9.8.*(z(i)-z(1));
-end
-Enernew=Ener2';
+% Energy balance E(t) - E0 from RK4 (same convention as NE_EP / EP_LGIM)
+Enernew = Ener(:);
 
 executionTime = toc
 if ~exist('save_filename', 'var') || isempty(save_filename)

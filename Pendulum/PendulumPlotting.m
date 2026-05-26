@@ -230,12 +230,12 @@ set(gca, 'XScale', 'log', 'YScale', 'log', ...
 setLogYTicks(gca, current_data, 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', pendulumFont);
 xlabel('Time step [ms]', 'FontName', pendulumFont);
-ylabel('Energy magnitude [J]', 'FontName', pendulumFont);
+ylabel('|Energy balance| at final step [J]', 'FontName', pendulumFont);
 valid_methods = any(~isnan(energy_last_step), 2);
 legend(plot_handles(valid_methods), method_names(valid_methods), ...
     'Location', 'northwest', 'FontName', pendulumFont);
 
-%% RMS energy magnitude
+%% RMS energy balance
 figure;
 hold on;
 current_data = [];
@@ -254,7 +254,7 @@ set(gca, 'XScale', 'log', 'YScale', 'log', ...
 setLogYTicks(gca, current_data, 'auto');
 set(gca, 'XMinorGrid', 'off', 'YMinorGrid', 'off', 'FontName', pendulumFont);
 xlabel('Time step [ms]', 'FontName', pendulumFont);
-ylabel('RMS energy magnitude [J]', 'FontName', pendulumFont);
+ylabel('RMS |energy balance| [J]', 'FontName', pendulumFont);
 valid_methods = any(~isnan(energy_errors_rms), 2);
 legend(plot_handles(valid_methods), method_names(valid_methods), ...
     'Location', 'northwest', 'FontName', pendulumFont);
