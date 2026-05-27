@@ -32,9 +32,17 @@ Instructions
 
    Note: `.mat` outputs are not tracked in git (see repository `.gitignore`).
 
+   Computational time: each integrator saves `executionTime` (integration only; see main
+   `README.md`). At the top of `Run_Pendulum_Batch.m`, `n_timing_repeats` controls how many
+   times each integration is run; the median is stored. Default is **1**. Use **5** for
+   smoother timing curves; expect integration cost to scale by about **×5** (full pendulum
+   batch with 5 repeats was on the order of ~1 h on a typical laptop in testing).
+
+   Estimated batch runtime (default `n_timing_repeats = 1`): **~10 minutes** on the system
+   described above (plus a few minutes for `PendulumPlotting.m`).
+
 4) After the batch has finished, run `PendulumPlotting.m` to compare methods against
-   `ExactRef_HighAccuracy.mat` and generate figures. Estimated runtime for the plotting script:
-   on the order of minutes on the system described above (depends on disk I/O and figure count).
+   `ExactRef_HighAccuracy.mat` and generate figures.
 
 For a faster test run, reduce `time_steps_ms` inside `Run_Pendulum_Batch.m` (for example
 `time_steps_ms = [10, 50, 100];` instead of the full list), similar to the example in

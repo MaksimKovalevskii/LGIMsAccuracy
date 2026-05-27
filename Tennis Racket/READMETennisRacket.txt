@@ -29,9 +29,16 @@ Instructions
 
    Note: `.mat` outputs are not tracked in git (see repository `.gitignore`).
 
+   Computational time: each integrator saves `executionTime` (integration only; see main
+   `README.md`). At the top of `Run_Tennis_Full_Batch.m`, `n_timing_repeats` controls how many
+   times each integration is run; the median is stored. Default is **1**. Use **5** for
+   smoother timing curves; expect integration cost to scale by about **×5**.
+
+   Estimated batch runtime (default `n_timing_repeats = 1`): **~10 minutes** on the system
+   described above (plus a few minutes for `Tennis_Plotting.m`).
+
 4) After the batch has finished, run `Tennis_Plotting.m` to compare methods against `TennisRef.mat`
-   and generate figures. Estimated runtime for the plotting script: on the order of minutes on
-   the system described above (depends on disk I/O and figure count).
+   and generate figures.
 
 For a faster test run, reduce the time-step vectors inside `Run_Tennis_Full_Batch.m` (comment the
 full lists and use a small subset, similar to the Heavy Top example in `READMEHeavyTop.txt`).

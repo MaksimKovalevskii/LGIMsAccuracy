@@ -21,7 +21,14 @@ Instructions
    - Additionally compute a high‑accuracy reference solution using `ode45` and save it as `HTRef.mat`.
    Note: allow at least 6 GB of free disk space for full-batch `.mat` outputs.
 
-Estimated runtime for full batch (all methods, all time steps): 30–45 minutes on a typical modern laptop similar to the system described above. Actual time depends on CPU performance and MATLAB version.
+   Computational time: each integrator saves `executionTime` (integration only; see main
+   `README.md`). At the top of `Run_HeavyTop_batch.m`, `n_timing_repeats` controls how many
+   times each integration is run; the median is stored. Default is **1**. Use **5** for
+   smoother timing curves; expect integration cost to scale by about **×5**.
+
+Estimated runtime for full batch (all methods, all time steps, default `n_timing_repeats = 1`):
+**30–45 minutes** on a typical modern laptop similar to the system described above (plus
+~10 minutes for `HeavyTop_plotting.m`). Actual time depends on CPU performance and MATLAB version.
 
 For a faster test run, use only larger time steps:
 - In `Run_HeavyTop_batch.m`, set for example  
