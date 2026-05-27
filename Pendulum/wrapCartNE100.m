@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Initial values for psi - rotational part
 psi10=0.55536036727;
 psi20=0.55536036727;
@@ -175,7 +175,18 @@ function [t, F, second_derivatives,C, dC,ddC,Ener] = custom_rk4(odefun, tspan, y
 end
 
 % Solve the ODE using custom RK4
-[t, F, second_derivatives, C, dC, ddC,Ener] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, second_derivatives, C, dC, ddC,Ener] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from Y matrix
 x = F(:,1);
@@ -215,8 +226,8 @@ theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 %     % pendulum_slider_xyz  Animate pendulum using direct x,y,z coordinates
 %     %
 %     % Inputs:
-%     %   t – time vector (N×1)
-%     %   x, y, z – position vectors (N×1) of the mass point
+%     %   t â€“ time vector (NÃ—1)
+%     %   x, y, z â€“ position vectors (NÃ—1) of the mass point
 % 
 %     N = numel(t);
 %     L = 6;  % rod length for setting axis limits
@@ -235,7 +246,7 @@ theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 %     view(ax, [-45, 30]);         % initial view (az,el)
 %     ax.Projection = 'perspective';
 % 
-%     % Then rotate 135° about Z
+%     % Then rotate 135Â° about Z
 %     camorbit(ax, 155, 0, 'data', [0 0 1]);
 %     ax.CameraViewAngleMode = 'manual';
 %         % Set camera so X axis points toward us, Y to the right, Z up
@@ -248,13 +259,13 @@ theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 %     quiver3(0,0,0,0,1,0,'g','LineWidth',2,'MaxHeadSize',0.5);
 %     quiver3(0,0,0,0,0,1,'b','LineWidth',2,'MaxHeadSize',0.5);
 % 
-%     % Plane of rotation: original YZ (x=0) rotated about Z by 45°
+%     % Plane of rotation: original YZ (x=0) rotated about Z by 45Â°
 % thetaPlane = deg2rad(-45);
 % % Normal of original YZ is [1,0,0]; rotate this normal about Z
 % n = [1, 0, 0] * [cos(thetaPlane), -sin(thetaPlane), 0;
 %                  sin(thetaPlane),  cos(thetaPlane), 0;
 %                                   0,               0, 1];
-% % Create a grid in Y–Z coordinates spanning the rod swing
+% % Create a grid in Yâ€“Z coordinates spanning the rod swing
 % [YY, ZZ] = meshgrid(linspace(-L, L, 50), linspace(-L, L, 50));
 % % For each (Y,Z), find X so that dot([X,Y,Z],n)==0 => X = -(n2*Y + n3*Z)/n1
 % XX = -(n(2)*YY + n(3)*ZZ) / n(1);
@@ -324,9 +335,9 @@ theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 % function exportPendulumGif(t, x, y, z, gifFilename, skip)
 %     % exportPendulumGif Save pendulum animation as GIF matching slider view
 %     %
-%     % t, x, y, z       – vectors (N×1)
-%     % gifFilename      – string for output, e.g. 'pendulum.gif'
-%     % skip             – integer frame subsample interval
+%     % t, x, y, z       â€“ vectors (NÃ—1)
+%     % gifFilename      â€“ string for output, e.g. 'pendulum.gif'
+%     % skip             â€“ integer frame subsample interval
 % 
 %     N = numel(t);
 %     L = 6;
@@ -349,7 +360,7 @@ theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 %     xlabel('X'); ylabel('Y'); zlabel('Z');
 %     title('Large rotations of thin rod');
 % 
-%     % Plane of rotation: YZ plane rotated about Z by –45°
+%     % Plane of rotation: YZ plane rotated about Z by â€“45Â°
 %     thetaPlane = deg2rad(45);
 %     n = [cos(thetaPlane), sin(thetaPlane), 0];
 %     [YY,ZZ] = meshgrid(linspace(-L,L,50), linspace(-L,L,50));
@@ -409,7 +420,7 @@ theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 % 
 % pendulum_slider_xyz(t, x, y, z);
 
-executionTime = toc
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename', 'var') || isempty(save_filename)
     save_filename = sprintf('wrCart_NE_dt_%.1fms.mat', dt * 1000);
 end
@@ -566,21 +577,21 @@ save(save_filename, '-v7.3');
 % subplot(4,1,1);
 % plot(t,grC,'b-','LineWidth',0.5); 
 % ylim([-1*10^-1,1*10^-1]);
-% title('∣∣C∣∣');
+% title('âˆ£âˆ£Câˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,2);
 % plot(t,grdC,'g-','LineWidth',1); 
 % ylim([-5*10^-2,5*10^-2]);
-% title('∣∣C''∣∣');
+% title('âˆ£âˆ£C''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,3);
 % plot(t,grddC,'r-','LineWidth',1); 
 % ylim([-5*10^-13,5*10^-13]);
-% title('∣∣C''''∣∣');
+% title('âˆ£âˆ£C''''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 

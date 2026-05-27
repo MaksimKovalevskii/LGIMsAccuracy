@@ -4,6 +4,11 @@
 %        (2) each loop sets dt (seconds), save_filename, then run(...)
 % Same convention as Heavy Top Run_HeavyTop_batch.m (reference + batch).
 
+% Timing study: each integration runs n_timing_repeats times; executionTime
+% is the median (robust to run-to-run noise). Default 5 for batch runs.
+% WARNING: N multiplies integration cost of the batch by N (not save/post-process).
+n_timing_repeats = 1;
+
 %% Reference solution (ode45) — TennisRef.mat
 run('Tennis_ode45');
 

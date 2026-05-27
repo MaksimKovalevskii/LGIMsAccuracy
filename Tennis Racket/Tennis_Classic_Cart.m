@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Parameters
 psi10=0;
 psi20=0;
@@ -74,7 +74,7 @@ theta=phi;
     Ghat = computeGhat(psi);
 
  if abs(phi) < 1e-4
-        % Small angle: G ≈ I - 0.5*PsiHat + (1/12)*PsiHat^2
+        % Small angle: G â‰ˆ I - 0.5*PsiHat + (1/12)*PsiHat^2
         GhatDot = -0.5*PsiHatDot + (1/12)*(PsiHatDot*PsiHat + PsiHat*PsiHatDot);
     else
        phi_dot = (psi * psid') / phi;  % psi^T * psid / phi
@@ -171,7 +171,18 @@ cond_history = zeros(6,n);  % [cond, det, norm, min_eig, max_eig, eig_ratio]
 end
 
 % Solve the ODE using custom RK4
-[t, F, Ener,H_norm, theta,omegaint,cond_history] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, Ener,H_norm, theta,omegaint,cond_history] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from Y matrix
 psi1 = F(:,1);
@@ -185,7 +196,7 @@ wx=omegaint(:,1);
 wy=omegaint(:,2);
 wz=omegaint(:,3);
 
-executionTime = toc
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename', 'var') || isempty(save_filename)
     % %g keeps 0.1 and 0.125 distinct in the filename
     save_filename = sprintf('ClassicCart_dt_%gms.mat', dt * 1000);
@@ -220,7 +231,7 @@ eig_ratio = cond_history(:,6);
 % figure;
 % loglog(theta, cond_Mqq, 'r-', 'LineWidth', 2);
 % title('Condition Number vs Rotation Magnitude');
-% xlabel('θ = ||ψ|| (rad)');
+% xlabel('Î¸ = ||Ïˆ|| (rad)');
 % ylabel('cond(Mqq)');
 % grid on;
 % 
@@ -232,12 +243,12 @@ eig_ratio = cond_history(:,6);
 % semilogy(t, min_eig, 'b-', 'LineWidth', 2);
 % title('Eigenvalue Evolution');
 % ylabel('Eigenvalue Magnitude');
-% legend('λ_{max}', 'λ_{min}', 'Location', 'best');
+% legend('Î»_{max}', 'Î»_{min}', 'Location', 'best');
 % grid on;
 % 
 % subplot(2,1,2);
 % semilogy(t, eig_ratio, 'g-', 'LineWidth', 2);
-% ylabel('λ_{max}/λ_{min}');
+% ylabel('Î»_{max}/Î»_{min}');
 % xlabel('Time (s)');
 % grid on;
 % 

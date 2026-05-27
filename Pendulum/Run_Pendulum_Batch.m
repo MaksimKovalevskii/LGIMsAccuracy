@@ -8,6 +8,11 @@ function Run_Pendulum_Batch()
     here = fileparts(mfilename('fullpath'));
     oldPwd = cd(here);
     try
+        % Timing study: each integration runs n_timing_repeats times; executionTime
+        % is the median (robust to run-to-run noise). Default 5 for batch runs.
+        % WARNING: N multiplies integration cost of the batch by N (not save/post-process).
+        n_timing_repeats = 1;
+
         time_steps_ms = [0.2, 0.5, 1, 2, 5, 10, 20, 50, 100];
 
         % --- Reference (high-accuracy ode45) ---

@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 b10=0.27059805007;
 b20=0.27059805007;
 b30=0;
@@ -269,7 +269,18 @@ v_new = vi + (1/6)*(k1_v + 2*k2_v + 2*k3_v + k4_v);
 end
 
 % Solve the ODE using custom RK4
-[t, F, second_derivatives, C, dC, ddC,Ener, UC] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, second_derivatives, C, dC, ddC,Ener, UC] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from Y matrix
 x = F(:,1);
@@ -305,7 +316,7 @@ grdC(i)=(dC(i,1)+dC(i,2)+dC(i,3))/3;
 grddC(i)=(ddC(i,1)+ddC(i,2)+ddC(i,3))/3;
 end
 
-executionTime = toc
+% executionTime captured at the custom_rk4 call above (timing harness)
 
 if ~exist('save_filename', 'var') || isempty(save_filename)
     save_filename = sprintf('EP_LGIM_dt_%.1fms.mat', dt * 1000);
@@ -435,21 +446,21 @@ save(save_filename, '-v7.3');
 % subplot(4,1,1);
 % plot(t,grC,'b-','LineWidth',0.5); 
 % ylim([-1*10^-1,1*10^-1]);
-% title('∣∣C∣∣');
+% title('âˆ£âˆ£Câˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,2);
 % plot(t,grdC,'g-','LineWidth',1); 
 % ylim([-5*10^-2,5*10^-2]);
-% title('∣∣C''∣∣');
+% title('âˆ£âˆ£C''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,3);
 % plot(t,grddC,'r-','LineWidth',1); 
 % ylim([-5*10^-14,5*10^-14]);
-% title('∣∣C''''∣∣');
+% title('âˆ£âˆ£C''''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 

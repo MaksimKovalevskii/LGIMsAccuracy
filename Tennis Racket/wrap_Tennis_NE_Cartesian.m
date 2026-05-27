@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Parameters
 psi10=0;
 psi20=0;
@@ -143,7 +143,18 @@ function [t, F, theta,Ener,H_norm,OrtDet,OrtIdent] = custom_rk4(odefun, tspan, y
 end
 
 % Solve the ODE using custom RK4
-[t, F, theta,Ener,H_norm,OrtDet,OrtIdent] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, theta,Ener,H_norm,OrtDet,OrtIdent] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from Y matrix
 wx = F(:,1);
@@ -153,7 +164,7 @@ psi1 = F(:,4);
 psi2 = F(:,5);
 psi3 = F(:,6);
 
-executionTime = toc;
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename','var') || isempty(save_filename)
     save_filename = sprintf('wrCart_NE_dt_%0.1fms.mat', dt*1000);
 end

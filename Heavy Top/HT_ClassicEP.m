@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Parameters
 b00=1;
 b10=0;
@@ -238,7 +238,18 @@ function [t, F, second_derivatives,C,dC,ddC,Ener,UC,theta,omegaint] = custom_rk4
 end
 
 % Solve the ODE using custom RK4
-[t, F, second_derivatives, C, dC, ddC,Ener, UC, theta,omegaint] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, second_derivatives, C, dC, ddC,Ener, UC, theta,omegaint] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from F matrix
     x = F(:,1);
@@ -279,7 +290,7 @@ grdC(i)=(dC(i,1)+dC(i,2)+dC(i,3)+dC(i,4))/4;
 grddC(i)=(ddC(i,1)+ddC(i,2)+ddC(i,3)+ddC(i,4))/4;
 end
 
-executionTime = toc;
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename','var') || isempty(save_filename)
     save_filename = sprintf('HTClassicEP_dt_%.2fms.mat', dt*1000);
 end
@@ -451,21 +462,21 @@ save(save_filename, '-v7.3');
 % subplot(4,1,1);
 % plot(t,grC,'b-','LineWidth',0.5); 
 % ylim([-1*10^-4,1*10^-4]);
-% title('∣∣C∣∣');
+% title('âˆ£âˆ£Câˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,2);
 % plot(t,grdC,'g-','LineWidth',1); 
 % ylim([-1*10^-4,1*10^-4]);
-% title('∣∣C''∣∣');
+% title('âˆ£âˆ£C''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,3);
 % plot(t,grddC,'r-','LineWidth',1); 
 % ylim([-1*10^-12,1*10^-12]);
-% title('∣∣C''''∣∣');
+% title('âˆ£âˆ£C''''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 

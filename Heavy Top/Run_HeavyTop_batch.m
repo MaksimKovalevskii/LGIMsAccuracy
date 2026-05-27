@@ -1,6 +1,11 @@
 % Single batch: run all Heavy Top programs for a list of time steps (in ms),
 % plus a single reference solution with ode45 (fixed time step).
 %
+% Timing study: each integration runs n_timing_repeats times; executionTime
+% is the median (robust to run-to-run noise). Default 5 for batch runs.
+% WARNING: N multiplies integration cost of the batch by N (not save/post-process).
+n_timing_repeats = 1;
+
 % Time steps in milliseconds:
 %time_steps_ms = [3, 4, 10];
 time_steps_ms = [0.01, 0.02, 0.05, 0.1, 0.2, 0.5, 1, 1.5, 2, 3, 4, 10];

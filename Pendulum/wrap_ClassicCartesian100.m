@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Initial values for psi - rotational part
 psi10=0.55536036727;
 psi20=0.55536036727;
@@ -61,7 +61,7 @@ Gint=GmatrixCart(x, y, z, psi1, psi2, psi3);%Function for matrix G
 phi=theta;
  % Keep small-angle threshold consistent with GmatrixCart (uses Taylor for phi < 1e-5)
  if abs(phi) < 1e-5
-        % Small angle: G ≈ I - 0.5*PsiHat + (1/12)*PsiHat^2
+        % Small angle: G â‰ˆ I - 0.5*PsiHat + (1/12)*PsiHat^2
         GhatDot = -0.5*PsiHatDot + (1/12)*(PsiHatDot*PsiHat + PsiHat*PsiHatDot);
     else
         cos_phi = cos(phi);
@@ -195,7 +195,18 @@ end
 
 % Solve the ODE using custom RK4 (pass E0 explicitly; local functions do not share script vars)
 odefun = @(t, F) odesystem(t, F, E0_energy);
-[t, F, second_derivatives, C_history, Cq_qd_history, C_ddot_history, theta_history, Ener] = custom_rk4(odefun, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, second_derivatives, C_history, Cq_qd_history, C_ddot_history, theta_history, Ener] = custom_rk4(odefun, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 theta_history (1,1) = sqrt(psi10^2+psi20^2+psi30^2);
 
 % Extract results from F matrix
@@ -228,7 +239,7 @@ ddC = max(abs(C_ddot_history), [], 2);
 % Energy balance E(t) - E0 from RK4 (same convention as NE_EP / EP_LGIM)
 Enernew = Ener(:);
 
-executionTime = toc
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename', 'var') || isempty(save_filename)
     save_filename = sprintf('Cart_dt_%.1fms.mat', dt * 1000);
 end
@@ -375,21 +386,21 @@ save(save_filename, '-v7.3');
 % subplot(4,1,1);
 % plot(t,C,'b-','LineWidth',0.5); 
 % ylim([-2*10^-2,2*10^-2]);
-% title('∣∣C∣∣');
+% title('âˆ£âˆ£Câˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,2);
 % plot(t,dC,'g-','LineWidth',1); 
 % ylim([-2*10^-2,2*10^-2]);
-% title('∣∣C''∣∣');
+% title('âˆ£âˆ£C''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,3);
 % plot(t,ddC,'r-','LineWidth',1); 
 % ylim([-5*10^-14,5*10^-14]);
-% title('∣∣C''''∣∣');
+% title('âˆ£âˆ£C''''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 

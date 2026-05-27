@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Initial values for psi - rotational part
 psi10= 0;
 psi20= 0;
@@ -51,11 +51,11 @@ xd0_calc = gw0(2)*z0 - gw0(3)*y0;  % Should be 4.615380000000000
 
 Ener0 =5.435696790865547e+03;
 
-% Local–global transition - Algorithm 1, function UAC from article
+% Localâ€“global transition - Algorithm 1, function UAC from article
 function q_new = NewLGT(q_old, Delta_q)
     Delta_psi = Delta_q;
   
-    % Rotation update using composition operation ⋄
+    % Rotation update using composition operation â‹„
     psi_old = q_old;
     psi_new = rotation_vector_composition(psi_old, Delta_psi);
     
@@ -365,7 +365,18 @@ v_new = vi + (1/6)*(k1_v + 2*k2_v + 2*k3_v + k4_v);
 end
 
 % Solve the ODE using custom RK4
-[t, F, second_derivatives, C, dC, ddC,Ener] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, second_derivatives, C, dC, ddC,Ener] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from Y matrix
 x = F(:,1);
@@ -401,7 +412,7 @@ end
 
 theta = sqrt(psi1.^2 + psi2.^2 + psi3.^2);
 
-executionTime = toc;
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename','var') || isempty(save_filename)
     save_filename = sprintf('HT_CartLGIM_dt_%.2fms.mat', dt*1000);
 end
@@ -598,21 +609,21 @@ save(save_filename, '-v7.3');
 % subplot(4,1,1);
 % plot(t,grC,'b-','LineWidth',0.5); 
 % ylim([-1*10^-3,1*10^-3]);
-% title('∣∣C∣∣');
+% title('âˆ£âˆ£Câˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 
 % subplot(4,1,2);
 % plot(t,grdC,'g-','LineWidth',1); 
 % ylim([-1*10^-4,1*10^-4]);
-% title('∣∣C''∣∣');
+% title('âˆ£âˆ£C''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 
 % subplot(4,1,3);
 % plot(t,grddC,'r-','LineWidth',1); 
 % ylim([-5*10^-12,5*10^-12]);
-% title('∣∣C''''∣∣');
+% title('âˆ£âˆ£C''''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 

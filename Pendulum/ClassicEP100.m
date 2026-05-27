@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 b10=0.27059805007;
 b20=0.27059805007;
 b30=0;
@@ -140,7 +140,18 @@ end
 
 % Solve the ODE using custom RK4 (pass E0 explicitly; local functions do not share script vars)
 odefun = @(t, F) odesystem(t, F, E0_energy);
-[t, F, second_derivatives, Ener] = custom_rk4(odefun, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, second_derivatives, Ener] = custom_rk4(odefun, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from F matrix
     x = F(:,1);
@@ -192,7 +203,7 @@ Enernew2 = Ener(:);
 
 UC2 = 1 - b0.^2  - b1.^2 - b2.^2 - b3.^2;
 
-executionTime = toc
+% executionTime captured at the custom_rk4 call above (timing harness)
 if ~exist('save_filename', 'var') || isempty(save_filename)
     save_filename = sprintf('EP_dt_%.1fms.mat', dt * 1000);
 end
@@ -354,21 +365,21 @@ save(save_filename, '-v7.3');
 % subplot(4,1,1);
 % plot(t,C,'b-','LineWidth',0.5); 
 % ylim([-1*10^-3,1*10^-3]);
-% title('∣∣C∣∣');
+% title('âˆ£âˆ£Câˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,2);
 % plot(t,dC,'g-','LineWidth',1); 
 % ylim([-5*10^-4,5*10^-4]);
-% title('∣∣C''∣∣');
+% title('âˆ£âˆ£C''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
 % subplot(4,1,3);
 % plot(t,ddC,'r-','LineWidth',1); 
 % ylim([-5*10^-13,5*10^-13]);
-% title('∣∣C''''∣∣');
+% title('âˆ£âˆ£C''''âˆ£âˆ£');
 % ylabel('Violation');
 % grid on;
 % 
@@ -454,7 +465,7 @@ save(save_filename, '-v7.3');
 % legend('$\ddot{R}_X(t)$', '$\ddot{R}_Y(t)$', '$\ddot{R}_Z(t)$', 'Location', 'best', 'Interpreter', 'latex');
 % title('Acceleration Components');
 % xlabel('Time (s)');
-% ylabel('Acceleration (m/s²)');
+% ylabel('Acceleration (m/sÂ²)');
 % grid on;
 % 
 % Plotting results for x (paper style)

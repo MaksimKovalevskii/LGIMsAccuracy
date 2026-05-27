@@ -1,4 +1,4 @@
-tic;
+﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
 % Parameters
 psi10=0;
 psi20=0;
@@ -26,10 +26,10 @@ function S = skew(v)
     S = [0 -v(3) v(2); v(3) 0 -v(1); -v(2) v(1) 0];
 end
 
-% Local–global transition - Algorithm 1, function UAC from article
+% Localâ€“global transition - Algorithm 1, function UAC from article
 function q_new = LGT(q_old, Delta_q)
 
-    % Rotation update using composition operation ⋄
+    % Rotation update using composition operation â‹„
     psi_new = rotation_vector_composition(q_old, Delta_q);
     q_new = psi_new;
 end
@@ -233,7 +233,18 @@ v_new = vi + (h/6)*(k1_v + 2*k2_v + 2*k3_v + k4_v);
 end
 
 % Solve the ODE using custom RK4
-[t, F, theta,Ener,H_norm,OrtDet,OrtIdent] = custom_rk4(@odesystem, tspan, initial_conditions);
+% --- timing: integration is run n_timing_repeats times; executionTime is the median ---
+% (only the integration is repeated; setup, post-processing and save run once)
+if ~exist('n_timing_repeats', 'var') || isempty(n_timing_repeats)
+    n_timing_repeats = 1;   % a batch runner may raise this for a timing study
+end
+timing_samples = zeros(1, n_timing_repeats);
+for timing_rep = 1:n_timing_repeats
+    tic;
+    [t, F, theta,Ener,H_norm,OrtDet,OrtIdent] = custom_rk4(@odesystem, tspan, initial_conditions);
+    timing_samples(timing_rep) = toc;  % integration only
+end
+executionTime = median(timing_samples);  % robust to run-to-run noise
 
 % Extract results from Y matrix
 wx = F(:,1);
@@ -243,7 +254,7 @@ psi1 = F(:,4);
 psi2 = F(:,5);
 psi3 = F(:,6);
 
-executionTime = toc
+% executionTime captured at the custom_rk4 call above (timing harness)
 
 if ~exist('save_filename', 'var') || isempty(save_filename)
     save_filename = sprintf('wrLGIM_dt_%0.1fms.mat', dt * 1000);
