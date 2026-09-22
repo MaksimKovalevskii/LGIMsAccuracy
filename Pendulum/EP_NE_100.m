@@ -1,4 +1,5 @@
 ﻿% --- timing: tic/toc now brackets only the custom_rk4 integration call ---
+addpath(fileparts(fileparts(mfilename('fullpath'))));
 global wx0 wy0 wz0 xd0 yd0 zd0;
 % Parameters
 b10=0.27059805007;
@@ -154,6 +155,7 @@ function [t, F, second_derivatives,dC,ddC,Ener,UC,theta] = custom_rk4(odefun, ts
         [k4, ~] = odefun(ti + h, yi + h*k3);
         
         F_temp(:,i+1) = yi + (h/6)*(k1 + 2*k2 + 2*k3 + k4);
+        F_temp(10:13,i+1) = renormalize_quaternion(F_temp(10:13,i+1));
         second_derivatives(:,i) = sd1;  
         dC(:,i) = dC1;
         ddC(:,i) = ddC1;
